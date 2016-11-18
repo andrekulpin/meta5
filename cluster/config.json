@@ -1,0 +1,40 @@
+{
+
+	"port": 8095,
+	"workerCount": 1,
+	"coreFolder": "core",
+	"serverFolder": "core/server",
+	"cronFolder": "core/cron",
+	"dbFolder": "core/db",
+	"ignoreFolders": ["misc/**"],
+	"mainExt": ".js",
+	"mainFile": "index.js",
+	"mainConfig": "config.json",
+	"mainMethod": "get",
+	"mainDb": "riak",
+	"mainController": "metaparser",
+	"systemUpdateInterval": 600000,
+	"databases":{
+		"redis":{
+			"config": {},
+			"autoConnect": true
+		},
+		"riak":{
+			"config":{
+				"host": ["127.0.0.1:8087"]
+			},
+			"autoConnect": true
+		},
+		"vertica": {
+			"config": {
+				"host": "78.47.79.80",
+				"port": 5433,
+				"user": "bumblebee",
+				"password": "vbyec3gk.cnm",
+				"database": "dwh"	
+			},
+			"autoConnect": false
+		}
+	}
+
+}
