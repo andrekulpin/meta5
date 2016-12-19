@@ -1,29 +1,25 @@
 const co = require('co');
-const initContainer = require('./container');
+const initInjector = require('./Injector');
 
 exports.init = function( config ){
 	co(function*(){
-
-		const container = yield initContainer( config );
-		const initStorage = yield container.get('storage');
+		const { coreFolder, ignoreFolders } = config;
+		const injector = yield initInjector( coreFolder, ignoreFolders );
+		const initStorage = yield injector.get('storage');
 		/*
 			gonna make the storage obj global in case we'd like to quit gracefully,
 			shut down all the open client connections in the catch section
 		*/
-		storage = yield initStorage( config );
-		//console.log(container)
 		//start resolving all the dependencies of the project
-		const [ initServer, initCron ] = yield [ container.get('server'), container.get('cron') ];
-
-		//console.log(container)
-
+		const [ initStorage, initServer, initCron ] = yield [ 
+			injector.get('storage'),
+			injector.get('server'),
+			injector.get('cron')
+		];
 		//init sequentially server and then cron
 		//yield initServer( config );
+		storage = yield initStorage( config );
 		yield initCron( config );
-		
-		//console.log(container)
-		//yield initCron( config );
-
 	})
 	.catch(function(err){
 		console.log(500)

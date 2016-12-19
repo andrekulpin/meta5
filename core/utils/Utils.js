@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const R = require('ramda');
+const slowDown = require('slow-downer');
 
 class Utils {
 
@@ -14,6 +15,14 @@ class Utils {
 			}
 			return _.curryRight( fn )( ..._.reverse( args ) );
 		}	
+	}
+
+	*static waitFor( fn ){
+		let slow = slowDown(1000, n => Math.min( n + 1000, 60000 ));
+		while( !void 0 ){
+			let [ o ] = yield [ fn(), slow ];
+			if( o ){ break };
+		}
 	}
 
 }

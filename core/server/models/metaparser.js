@@ -1,15 +1,16 @@
+const { map } = require('lodash');
+
 module.exports = [ 'BaseModel', function( BaseModel ){
 
-	class MetaparserModel extends BaseModel {
+	class Metaparser extends BaseModel {
 
 		constructor( modelName ){
 			super( modelName );
 		}
 
-		*getConfig( type ){
+		*getConfig(){
 
-			type = type || 'config';
-			return yield this.riak.get('metaparser/' + type);
+			return yield this.riak.get('metaparser/config');
 
 		}
 
@@ -41,6 +42,11 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 
 			return yield this.redis.set( 'metaparser_lock', 1, 'nx', 'ex', secs );
 
+		}
+
+		*generateTasks( queries ){
+			let client = yield.this.vertica.createClient();
+			return map( queries, query => client.get( query ));
 		}
 
 		*setLockGroupTasks( tasks, group ){

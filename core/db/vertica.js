@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const __config__ = Symbol('__config__');
 const __driver__ = Symbol('__driver__');
+const __pool__ = Symbol('__pool__');
 const P = require('bluebird');
 
 class Vertica {
@@ -11,6 +12,14 @@ class Vertica {
 	}
 
 	*createClient( config ){
+		if(!this[__pool__]){
+			this[__pool__] = this[__driver__].Pool( config || this[__config__] );
+			return new P( ( resolve ) => {
+				this.client = this[__pool__].connect().then(resolve);
+			});
+		}
+
+
 		let client = yield new P((resolve) => {
 			return new this[__driver__].Pool( config || this[__config__] )
 			.connect()
@@ -29,7 +38,7 @@ class Vertica {
 	parse( results ){
 		return _.map( results.rows, row => {
 			return row;
-		})
+		});
 	}
 
 	end(){

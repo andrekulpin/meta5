@@ -7,12 +7,12 @@
 	"cronFolder": "core/cron",
 	"dbFolder": "core/db",
 	"ignoreFolders": ["misc/**"],
+	"mainUrl": "metaparser",
 	"mainExt": ".js",
 	"mainFile": "index.js",
 	"mainConfig": "config.json",
 	"mainMethod": "get",
 	"mainDb": "riak",
-	"mainController": "metaparser",
 	"systemUpdateInterval": 600000,
 	"databases":{
 		"redis":{
