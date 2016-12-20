@@ -17,7 +17,7 @@ class Utils {
 		}	
 	}
 
-	*static waitFor( fn ){
+	static *waitFor( fn ){
 		let slow = slowDown(1000, n => Math.min( n + 1000, 60000 ));
 		while( !void 0 ){
 			let [ o ] = yield [ fn(), slow ];

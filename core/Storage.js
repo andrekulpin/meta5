@@ -1,11 +1,11 @@
-//const config = require('cluster/config');
+const config = require('cluster/config');
 const _ = require('lodash');
 const { once, map } = require('co-dash');
 
 //Merges all the database wrappers in core/db folder with db driver clients
-module.exports = [ 'db/*', 'connector', function( dbWrappers, Connector ){
+module.exports = [ 'db/**', 'connector', function( dbWrappers, Connector ){
 	//One function to rule them all...
-	const initStorage = once(function*( config ){
+	const initStorage = once(function*(){
 		const { databases } = config;
 		//INIT CONNECTOR
 		const connector = new Connector( databases );

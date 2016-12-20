@@ -5,7 +5,7 @@ module.exports = ['Utils', function( Utils ){
 
 	class CronUtils extends Utils {
 
-		*static isGoodTime( cronSchedule ){
+		static *checkSchedule( cronSchedule ){
 
 			const slow = slowMo(1000, n => Math.min( n + 1000, 60000 ));
 			while( !void 69 ){
@@ -16,6 +16,8 @@ module.exports = ['Utils', function( Utils ){
 		}
 
 	}
+
+	return CronUtils
 
 }]
 

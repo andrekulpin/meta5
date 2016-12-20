@@ -2,11 +2,11 @@ const P = require('bluebird');
 const _ = require('lodash');
 const R = require('ramda');
 const isJson = require('is-json');
-const agents = require('core/misc/userAgents');
+const agents = require('core/references/userAgents');
 const Request = P.promisify(require('request'));
 const countries = ["world","open","us-fl","us-il","us-ny","uk","ch","us-dc","sg","nl","de","us-ca"];
 
-module.exports = ['utils', function( Utils ){
+module.exports = ['core/utils', function( Utils ){
 
 	class NetUtils extends Utils {
 

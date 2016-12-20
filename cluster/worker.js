@@ -5,7 +5,7 @@ exports.init = function( config ){
 	co(function*(){
 		const { coreFolder, ignoreFolders } = config;
 		const injector = yield initInjector( coreFolder, ignoreFolders );
-		const initStorage = yield injector.get('storage');
+		//const initStorage = yield injector.get('storage');
 		/*
 			gonna make the storage obj global in case we'd like to quit gracefully,
 			shut down all the open client connections in the catch section
@@ -18,6 +18,7 @@ exports.init = function( config ){
 		];
 		//init sequentially server and then cron
 		//yield initServer( config );
+		console.log(33333)
 		storage = yield initStorage( config );
 		yield initCron( config );
 	})

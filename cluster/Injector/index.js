@@ -1,5 +1,4 @@
 const types = {'[object Array]': 'array','[object Function]': 'function','[object String]': 'string'}
-const argsList = require('args-list');
 const __inject = Symbol('__inject');
 const __parseName = Symbol('__parseName');
 const __findDependency = Symbol('__findDependency');
@@ -12,6 +11,7 @@ const R = require('ramda');
 const P = require('bluebird');
 const co = require('co');
 const co_ = require('co-dash');
+const argsList = require('args-list');
 const { readdir, stat } = require('co-fs');
 const { join, basename } = require('path');
 const uncast = require('uncast');
@@ -58,9 +58,11 @@ class Injector {
 					default:
 						throw new Error(__UNRESOLVED_ERROR__( factory ));
 				}
+
 				args = yield _.map( dependencies, function*( dependency ){
 					return yield self.get( dependency );
 				});
+				
 				if( isGenerator(factory) ){
 					return done( yield factory( ...args ) );
 				}
@@ -93,7 +95,9 @@ class Injector {
 			if(_.isArray( deps )){
 				throw new Error(__UNRESOLVED_ERROR__( name ));
 			}
+
 			const dep = this.dependencies[ deps ];
+			
 			return isPromise( dep ) ? ( yield dep ) : dep;
 		}
 
@@ -177,6 +181,7 @@ class Injector {
 		const factory = this.factories[ obj ];
 		self.dependencies[ obj ] = self[__inject]( factory );
 		self.dependencies[ obj ] = yield self.dependencies[ obj ];
+
 		delete this.factories[ obj ];
 		return this.dependencies[ obj ];
 	}

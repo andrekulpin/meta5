@@ -2,7 +2,7 @@ const { map } = require('lodash');
 
 module.exports = [ 'BaseModel', function( BaseModel ){
 
-	class Metaparser extends BaseModel {
+	class MetaparserModel extends BaseModel {
 
 		constructor( modelName ){
 			super( modelName );
@@ -45,7 +45,7 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 		}
 
 		*generateTasks( queries ){
-			let client = yield.this.vertica.createClient();
+			let client = yield this.vertica.createClient();
 			return map( queries, query => client.get( query ));
 		}
 

@@ -45,6 +45,12 @@ describe('cluster/Injector functionality', function(){
 		injector = yield getInjector( dummyFolder );
 	});
 
+	it('should get all modules in the folder and indeces in subfolders', function*(){
+		let modules = yield injector.get('views/**');
+		expect( modules ).to.be.an('object');
+		expect( keys( modules ) ).to.have.length.of.at.least(3);
+	});
+
 	it('should get a module by name', function*(){
 		let module = yield injector.get('Router');
 		expect( module ).to.be.an('object');
@@ -57,7 +63,7 @@ describe('cluster/Injector functionality', function(){
 	});
 
 	it('should get several modules at once', function*(){
-		let modules = yield injector.get('models/*');
+		let modules = yield injector.get('models/*.js');
 		expect( modules ).to.be.an('object');
 		expect( keys( modules ) ).to.have.length.of.at.least(3);
 	});

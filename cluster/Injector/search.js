@@ -27,27 +27,34 @@ module.exports = function( needle, haystack, isPath ){
 	//module path resolution
 	const LAST = _.last( NAME.split('/'));
 	const isIndex = needle.indexOf('index') > -1;
-	const matchAll = needle.indexOf('*') > -1;
+	const matchFiles = needle.indexOf('*') > -1;
+	const matchAll = needle.indexOf('**') > -1;
 	if( matchAll ){
 		const BASE = _.initial(NAME.split('/')).join('/');
 		let _keys = getDepByAstrk( BASE, key => {
 			const slice = key.slice(key.indexOf( BASE ) + BASE.length + 1);
 			const split = slice.split('/');
-			return split.length === 1;
+			return split.length === 1 || split[1] === 'index.js';
 		})( keys )
 		if(_keys && _keys.length > 1){
-			for(let i in _keys){
-				let split = _keys[i].split('/');
-				if('undefined' === typeof dir){
-					var dir = split[ split.indexOf(BASE) - 1 ];
-					continue;
-				}
-				var _dir = split[ split.indexOf(BASE) - 1 ];
+			if(isAmbiguous(_keys, BASE)){
+				throw new Error(__UNRESOLVED_ERROR__( needle ));
+			}
+		}
+		return _keys;
+	}
+	if( matchFiles ){
+		const BASE = _.initial(NAME.split('/')).join('/');
+		const EXT = needle.split('.')[ 1 ];
+		let _keys = getDepByAstrk( BASE, key => {
+			const slice = key.slice(key.indexOf( BASE ) + BASE.length + 1);
+			const split = slice.split('/');
+			return split.length === 1 && ( EXT ? split[0].split('.')[1] === EXT : true );
+		})( keys )
 
-				if(dir !== _dir){
-
-					throw new Error(__UNRESOLVED_ERROR__( needle ));
-				}
+		if(_keys && _keys.length > 1){
+			if(isAmbiguous(_keys, BASE)){
+				throw new Error(__UNRESOLVED_ERROR__( needle ));
 			}
 		}
 		return _keys;
@@ -59,4 +66,19 @@ module.exports = function( needle, haystack, isPath ){
 	let _keys = getDepByName( LAST )( keys );
 	return _keys ? _keys : getDepByPath( PATH )( keys );	
 
+}
+
+function isAmbiguous(keys, base){
+	var dir, _dir;
+	return _.find(keys, key => {
+		let split = key.split('/');
+		if('undefined' === typeof dir){
+			dir = split[ split.indexOf(base) - 1 ];
+			return;
+		}
+		_dir = split[ split.indexOf(base) - 1 ];
+		if(dir !== _dir){
+			return true;
+		}
+	});
 }
