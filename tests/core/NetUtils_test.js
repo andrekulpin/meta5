@@ -11,13 +11,15 @@ describe('NetUtils', function(){
 
 	before( () => {
 		const requestStub = ( url, cb ) => setImmediate( () => cb( null, OK ) );
-		const UtilsDep = require( 'core/Utils' );
-		const getNetUtils = proxyQuire( 'core/NetUtils', { 'request': requestStub } );
+		const UtilsDep = require( 'core/utils' );
+		const getNetUtils = proxyQuire( 'core/utils/NetUtils', { 'request': requestStub } );
 		netUtils = getModule( getNetUtils )( UtilsDep );
+
 	})
 
 	it('should customRequest ok', function*(){
-		let res = yield netUtils.customRequest({method: 'POST'}, 'http://www.zaloopa.com');
+		let request = netUtils.customRequest({method: 'POST', url: 'http://www.zaloopa.com'});
+		let res = yield request.exec();
 		expect( res ).to.deep.equal( OK );
 	});
 

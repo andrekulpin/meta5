@@ -1,5 +1,5 @@
-var Casper = require('casper');
-var system = require('system');
+/*var Casper = {create: function(){}}//require('casper');
+var system = {args: {}}//require('system');
 var args = system.args;
 // var url = args[args.length - 2];
 // var proxy = args[args.length - 1];
@@ -45,3 +45,4 @@ casper.run();
 
 
 
+*/

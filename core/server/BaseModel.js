@@ -5,6 +5,8 @@ module.exports = [ 'storage', function*( getStorage ){
 
 	//get a cached connection...
 	let storage = yield getStorage();
+	
+	debugger;
 
 	class BaseModel {
 

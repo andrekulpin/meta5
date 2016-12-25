@@ -19,8 +19,8 @@ module.exports = ['Utils', function( Utils ){
 
 		push( task ){
 			let self = this;
-			this.tasks.push( task );
-			if(this.running < this.concurrency){
+			self.tasks.push( task );
+			if(self.running < self.concurrency){
 				co(function*(){
 					let task = self.tasks.shift();
 					self.running++;
@@ -35,9 +35,7 @@ module.exports = ['Utils', function( Utils ){
 					callback();
 				}
 			}
-
-			return this.repeat();
-
+			return self.repeat();
 		}
 
 		repeat(){

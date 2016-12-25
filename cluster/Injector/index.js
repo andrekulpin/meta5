@@ -90,7 +90,7 @@ class Injector {
 		}
 
 		const deps = uncast(this[__findDependency]( name, isPath ));
-
+		
 		if(deps){
 			if(_.isArray( deps )){
 				throw new Error(__UNRESOLVED_ERROR__( name ));

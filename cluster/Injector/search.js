@@ -22,6 +22,7 @@ module.exports = function( needle, haystack, isPath ){
 	//just module name resolution
 	if(!isPath){
 		let _keys = getDepByName( NAME )( keys );
+		let ssss = getDepByIndex( PATH )( keys );
 		return _keys ? _keys : getDepByIndex( PATH )( keys );
 	}
 	//module path resolution

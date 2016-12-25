@@ -10,7 +10,7 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 
 		*getConfig(){
 
-			return yield this.riak.get('metaparser/config');
+			return yield this.riak.get('metaparser/aviaparser_config');
 
 		}
 
@@ -42,6 +42,10 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 
 			return yield this.redis.set( 'metaparser_lock', 1, 'nx', 'ex', secs );
 
+		}
+
+		*saveFares(){
+			return yield this.redis.set( '' );
 		}
 
 		*generateTasks( queries ){

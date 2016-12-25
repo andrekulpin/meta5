@@ -1,22 +1,15 @@
 module.exports = ['Aviaparser', 'CronUtils', 'models/metaparser', function*( Aviaparser, utils, db ){
 
 	let config = yield db.getConfig();
-	const aviaparser = new Aviaparser( 2 );
+	const aviaparser = new Aviaparser( config );
 
 	return function*(){
-
-		while( true ){
-
-			yield utils.checkSchedule( config.cronSchedule );
-			let task = yield aviaparser.getTask();
-			if(!task){
-				yield aviaparser.generateTasks();
-				continue;
-			}
-			yield aviaparser.run(task);
-
+		let task = yield aviaparser.getTask();
+		if(!task){
+			yield aviaparser.updateConfig();
+			return yield aviaparser.generateTasks();
 		}
-
+		yield aviaparser.run( task );
 	}
 
 }]

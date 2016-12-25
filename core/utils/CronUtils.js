@@ -11,7 +11,7 @@ module.exports = ['Utils', function( Utils ){
 			while( !void 69 ){
 				if(validateTime( cronSchedule )){ break }
 				yield slow();
-			}	
+			}
 
 		}
 

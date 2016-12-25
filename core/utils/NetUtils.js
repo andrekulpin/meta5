@@ -1,8 +1,8 @@
 const P = require('bluebird');
 const _ = require('lodash');
 const R = require('ramda');
-const isJson = require('is-json');
 const agents = require('core/references/userAgents');
+const Unirest = require('unirest');
 const Request = P.promisify(require('request'));
 const countries = ["world","open","us-fl","us-il","us-ny","uk","ch","us-dc","sg","nl","de","us-ca"];
 
@@ -10,8 +10,8 @@ module.exports = ['core/utils', function( Utils ){
 
 	class NetUtils extends Utils {
 
-		static customRequest( ...args ){
-			return this.__curry( __baseRequest, Object )( ...args );
+		static customRequest( options ){
+			return __requestObj( options );
 		}
 
 		static getUserAgent(){
@@ -31,20 +31,29 @@ module.exports = ['core/utils', function( Utils ){
 
 }]
 
+function __requestObj( opts ){
+	var fn = fn || __requestObj
+	fn.opts = _.merge(fn.opts || {}, opts);
+	fn.exec = function(){
+		return __execRequest( this.opts );
+	}
+	return fn;
+}
 
-function __baseRequest( { method, headers, body, timeout }, url ){
+function __execRequest( { url, method, headers, timeout, proxy, body } ){
+	debugger;
 	return Request({
 		url,
 		method,
 		headers,
 		body,
+		proxy,
 		timeout: timeout || 60000,
+		json: true,
 		gzip: true
 	})
 	.then( ({ body, headers }) => {
-		return {
-			headers,
-			body: isJson( body ) ? JSON.parse( body ) : body
-		}
+		debugger;
+		return { headers, body }
 	});	
 }
