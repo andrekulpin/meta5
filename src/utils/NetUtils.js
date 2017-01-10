@@ -1,12 +1,13 @@
 const P = require('bluebird');
 const _ = require('lodash');
 const R = require('ramda');
-const agents = require('core/references/userAgents');
 const Unirest = require('unirest');
 const Request = P.promisify(require('request'));
 const countries = ["world","open","us-fl","us-il","us-ny","uk","ch","us-dc","sg","nl","de","us-ca"];
 
-module.exports = ['core/utils', function( Utils ){
+module.exports = ['src/utils', 'references', function*( Utils, getReferences ){
+
+	let agents = yield getReferences(['userAgents']);
 
 	class NetUtils extends Utils {
 
@@ -41,7 +42,6 @@ function __requestObj( opts ){
 }
 
 function __execRequest( { url, method, headers, timeout, proxy, body } ){
-	debugger;
 	return Request({
 		url,
 		method,
@@ -53,7 +53,6 @@ function __execRequest( { url, method, headers, timeout, proxy, body } ){
 		gzip: true
 	})
 	.then( ({ body, headers }) => {
-		debugger;
 		return { headers, body }
 	});	
 }

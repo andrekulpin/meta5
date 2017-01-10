@@ -12,12 +12,12 @@ exports.init = function( config ){
 		*/
 		//start resolving all the dependencies of the project
 		const [ initStorage, initServer, initCron ] = yield [ 
-			injector.get('core/storage'),
-			injector.get('core/server'),
-			injector.get('core/cron')
+			injector.get('src/storage'),
+			injector.get('src/server'),
+			injector.get('src/cron')
 		];
 		//init sequentially server and then cron
-		//yield initServer( config );
+		yield initServer( config );
 		storage = yield initStorage( config );
 		yield initCron( config );
 	})

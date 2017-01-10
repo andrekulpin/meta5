@@ -48,7 +48,7 @@ module.exports = [
 			*getTask(){
 				var rand = Math.random() * 1000;
 				return yield stub({
-					source: 'skyscanner', from: 'MOW', to: 'LED', dateFrom: '2016-12-27'
+					source: 'skyscanner', from: 'MOW', to: 'LED', dateFrom: '2017-02-16'
 				})
 				//return yield db.getTask();
 			}
@@ -64,13 +64,16 @@ module.exports = [
 					fares: parser.getFares(),
 					ottFares: api.getOTTFares( params )
 				}
-				debugger;
 				let { fares, ottFares } = data;
-				fares.ottData = ottFares;
-				fares.parsingDate = new Date();
-				fares.parserMode  = 'auto';
+				let _data = {};
+				_data.fares = fares;
+				_data.fares.ottFares = ottFares;
+				_data.ottData = ottFares;
+				_data.parsingDate = new Date();
+				_data.parserMode  = 'auto';
+				debugger;
 				let obj = {
-					data: utils.getOTTDataObj( fares ),
+					data: utils.getOTTDataObj( _data ),
 					need: task.source,
 					universalFormater: UniversalFormatter,
 					BestPricesCutter: BestPriceCutter,

@@ -27,7 +27,7 @@ module.exports = ['CronUtils', function( CronUtils ){
 		}
 
 		static getOTTDataObj( data ){
-			return new OTTSEARCH_FUNCS( data );
+			return OTTSEARCH_FUNCS( data );
 		}
 
 	}
@@ -36,7 +36,7 @@ module.exports = ['CronUtils', function( CronUtils ){
 
 }]
 
-function OTTSEARCH_FUNCS(data){
+function OTTSEARCH_FUNCS( data ){
 	if(!(this instanceof OTTSEARCH_FUNCS)){
 		// init
 		if(data && data.ottData){

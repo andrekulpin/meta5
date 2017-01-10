@@ -16,16 +16,13 @@ module.exports = ['jobs/**', 'CronUtils', 'models/cron', function( jobs, utils, 
 			while( true ){
 
 				let cron = _.find( crons, { 'name': jobName, 'active': true } );
-				if( !cron ){
-					break;//need refactoring
-				} else {
-					yield utils.checkSchedule( cron.schedule );
-				}
+				if( !cron ){ break; }
+				yield utils.checkSchedule( cron.schedule );
 				yield jobInit();
 
 			}
 
-		})
+		});
 
 		//yield each( jobs, initJob => initJob );
 	}

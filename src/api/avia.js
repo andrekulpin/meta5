@@ -24,13 +24,12 @@ module.exports = ['NetUtils', 'models/api', function*( NetUtils, db ){
 	return {
 
 		*getOTTFares( body ){
-			let options = apis[ 'avia' ][ 'getOTTFares' ];
-			let hash = ( Buffer.from(credentials.username + ':' + credentials.password).toString('base64') );
+			const options = apis[ 'avia' ][ 'getOTTFares' ];
+			const hash = ( Buffer.from(credentials.username + ':' + credentials.password).toString('base64') );
 			options.headers['Authorization'] += hash;
 			options.body = qs.stringify( body );
-			let request = NetUtils.customRequest( options );
-			let { body: data }  = yield request.exec();
-			debugger;
+			const request = NetUtils.customRequest( options );
+			const { body: data }  = yield request.exec();
 			return data;
 		}
 

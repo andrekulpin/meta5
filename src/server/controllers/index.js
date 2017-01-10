@@ -28,6 +28,13 @@ module.exports = [ 'utils', 'models/metaparser', function*( utils, model ){
 
 			}
 
+		},
+
+		getBoy: {
+			method: 'get',
+			handler: function*(){
+				this.body = 'good boy'
+			}
 		}
 
 	}	

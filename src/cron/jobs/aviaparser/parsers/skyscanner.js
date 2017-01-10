@@ -23,7 +23,6 @@ module.exports = ['models/metaparser', 'NetUtils', function( model, utils ){
             let body = getBody( codeFrom, codeTo, dateFrom, dateTo );
             const { body: data } = yield this[ __getFares ]( body );
             return parseResponse( data );
-
         }
 
         formatFares( ...args ){
@@ -189,8 +188,9 @@ function format( obj, channel ){
     if(!obj.hideHeaders){
         csv.push(universalFormater({type: 'headers'}));
     }
-
+    debugger;
     for(key in fares){
+
         var fare = fares[key];
         if(fare.list.length <= 1){
             // skip proposals with only one participant
