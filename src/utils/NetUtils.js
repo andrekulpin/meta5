@@ -5,10 +5,11 @@ const Unirest = require('unirest');
 const Request = P.promisify(require('request'));
 const countries = ["world","open","us-fl","us-il","us-ny","uk","ch","us-dc","sg","nl","de","us-ca"];
 
-module.exports = ['src/utils', 'references', function*( Utils, getReferences ){
+module.exports = ['src/utils', 'references', function*( Utils, getReference ){
 
-	let agents = yield getReferences(['userAgents']);
+	let { data: agents } = yield getReference('userAgents');
 
+	debugger
 	class NetUtils extends Utils {
 
 		static customRequest( options ){
@@ -16,7 +17,7 @@ module.exports = ['src/utils', 'references', function*( Utils, getReferences ){
 		}
 
 		static getUserAgent(){
-			return _.sample( agents.names );
+			return _.sample( agents );
 		}
 
 		static getProxy( proxies, next ){

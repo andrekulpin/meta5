@@ -6,7 +6,7 @@
 	"serverFolder": "src/server",
 	"cronFolder": "src/cron",
 	"dbFolder": "src/db",
-	"ignoreFolders": ["misc/**"],
+	"ignoreFiles": ["**/*.json"],
 	"mainUrl": "metaparser",
 	"mainExt": ".js",
 	"mainFile": "index.js",

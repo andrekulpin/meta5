@@ -1,7 +1,9 @@
 const retry = require('co-retry');
 const moment = require('moment');
+const _ = require('lodash');
 
-module.exports = ['models/metaparser', 'NetUtils', function( model, utils ){
+
+module.exports = ['models/metaparser', 'NetUtils', 'references', function( model, utils, getReference ){
 
     const __getGeoName = Symbol('__getGeoName');
     const __getFares = Symbol('__getFares');
@@ -25,8 +27,9 @@ module.exports = ['models/metaparser', 'NetUtils', function( model, utils ){
             return parseResponse( data );
         }
 
-        formatFares( ...args ){
-            return format( ...args );
+        *formatFares( obj ){
+            let { data: airports } = yield getReference('airports');
+            return yield format( obj, airports );
         }
 
         *[__getGeoName]( city ){
@@ -142,7 +145,6 @@ function parseResponse( data ){
         }
 
         _prices.length = 0;
-
     }
 
     return _tmp;
@@ -164,7 +166,7 @@ function refactorize( arr ){
     return obj;
 }
 
-function format( obj, channel ){
+function *format( obj, airports ){
     var data = obj.data;
     var fares = data && data.fares;
     var ottData = data && data.ottData || {};
@@ -188,14 +190,19 @@ function format( obj, channel ){
     if(!obj.hideHeaders){
         csv.push(universalFormater({type: 'headers'}));
     }
-    debugger;
+
     for(key in fares){
 
         var fare = fares[key];
-        if(fare.list.length <= 1){
-            // skip proposals with only one participant
-            continue;
+        try {
+            if(fare.list.length <= 1){
+                // skip proposals with only one participant
+                continue;
+            }    
+        } catch(err) {
+            debugger
         }
+
 
         for(var company in fare.list){
             if(fare.list[company].p === ''){
@@ -230,11 +237,11 @@ function format( obj, channel ){
         var cityFrom = keyParts[0];
         var cityTo = keyParts[1];
 
-        if(geo.airports[cityFrom]){
-            cityFrom = geo.airports[cityFrom].city;
+        if(airports[cityFrom]){
+            cityFrom = airports[cityFrom].city;
         }
-        if(geo.airports[cityTo]){
-            cityTo = geo.airports[cityTo].city;
+        if(airports[cityTo]){
+            cityTo = airports[cityTo].city;
         }
 
         var lv = {type: 'line'}; // line vars
@@ -243,7 +250,7 @@ function format( obj, channel ){
         if(flightNumber.length){
             key = flightNumber;
         }
-        lv.channel = channel;
+        lv.channel = 'skyscanner';
         lv.parsingDate = data.parsingDate;              // parsing time
         lv.parserMode = data.parserMode;                // parser mode: auto|manual
         lv.serviceClass = data.serviceClass;            // class

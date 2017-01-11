@@ -3,8 +3,8 @@ const initInjector = require('./Injector');
 
 exports.init = function( config ){
 	co(function*(){
-		const { coreFolder, ignoreFolders } = config;
-		const injector = yield initInjector( coreFolder, ignoreFolders );
+		const { coreFolder, ignoreFiles } = config;
+		const injector = yield initInjector( coreFolder, ignoreFiles );
 		//const initStorage = yield injector.get('storage');
 		/*
 			gonna make the storage obj global in case we'd like to quit gracefully,

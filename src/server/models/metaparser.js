@@ -61,6 +61,10 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 			);
 		}
 
+		*saveFares( fares ){
+			return yield this.redis.set( 'metaparser_csv', fares, 'ex', 3600 )
+		}
+
 	}
 
 	return new MetaparserModel('metaparser');

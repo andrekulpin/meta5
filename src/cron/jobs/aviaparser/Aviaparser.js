@@ -59,7 +59,6 @@ module.exports = [
 				let config = this.config.sites[ key ];
 				let Parser = Parsers[ key ];
 				let parser = new Parser( task, config );
-				debugger;
 				let data = yield {
 					fares: parser.getFares(),
 					ottFares: api.getOTTFares( params )
@@ -67,11 +66,9 @@ module.exports = [
 				let { fares, ottFares } = data;
 				let _data = {};
 				_data.fares = fares;
-				_data.fares.ottFares = ottFares;
 				_data.ottData = ottFares;
 				_data.parsingDate = new Date();
 				_data.parserMode  = 'auto';
-				debugger;
 				let obj = {
 					data: utils.getOTTDataObj( _data ),
 					need: task.source,
@@ -81,7 +78,7 @@ module.exports = [
 					task: task
 				}
 				debugger;
-				fares = parser.formatFares( obj );
+				fares = yield parser.formatFares( obj );
 				debugger;
 				yield db.saveFares( fares );
 			}

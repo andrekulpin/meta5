@@ -58,7 +58,6 @@ class Injector {
 					default:
 						throw new Error(__UNRESOLVED_ERROR__( factory ));
 				}
-
 				args = yield _.map( dependencies, function*( dependency ){
 					return yield self.get( dependency );
 				});

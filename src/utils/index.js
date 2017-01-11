@@ -3,6 +3,7 @@ const P = require('bluebird');
 const R = require('ramda');
 const _ = require('lodash');
 const fs = require('fs');
+const path = require('path');
 const slowDown = require('slow-downer');
 
 class Utils {
@@ -10,7 +11,7 @@ class Utils {
 	static renderString( ...args ){
 		return this.__curry( __baseRenderString, Object )( ...args );
 	}
-	
+
 	static __curry( fn, type ){
 		return function( ...args ){
 			if( args && R.is( type, args[0] ) ){
@@ -28,50 +29,36 @@ class Utils {
 		}
 	}
 
-	static *readJSONSafe( file ){
-		let arr = _.castArray( file )
-		return yield __baseReadFile( arr, { json: true } );
+	static *readFileSafe( file ){
+		let stream = __baseCreateStream( file );
+		return yield __baseReadFile( stream );
 	}
 
-	static *readFileSafe( file ){
-		let arr = _.castArray( file )
-		return yield __baseReadFile( arr );
-	}
 
 }
 
 module.exports = Utils;
 
-function __baseReadFile( files, options ){
+function __baseReadFile( stream ){
 	return new P(( resolve, reject ) => {
-		H( files )
-			.map( __createBaseStream )
-			.map( file => H( file ).invoke( 'toString', ['utf8'] ) )
-			.parallel( __getMin( files, 10 ) )
-			.map( __getOptionsFn( options ) )
-			.errors( reject )
-			.toArray( resolve )
+		const data = [];
+		stream.on('data', buf => {
+			data.push(buf);
+		})
+		stream.on('end', () => {
+			const json = JSON.parse( Buffer.concat( data ));
+			resolve( json );
+		})
+		stream.on('error', reject);
 	});
-}
-
-function __getOptionsFn( options ){
-	let map = {
-		json: file => JSON.parse( file ) 
-	}
-	let key = _.keys( options )[0];
-	return map[ key ] || __identity;
 }
 
 function __identity( ___ ){
 	return ___;
 }
 
-function __createBaseStream( obj ){
+function __baseCreateStream( obj ){
 	return fs.createReadStream( obj );
-}
-
-function __getMin( obj, max ){
-	return Math.min( obj.length, max );
 }
 
 function __baseRenderString( params, str ){
