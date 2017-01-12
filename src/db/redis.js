@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const streamify = require('redis-rstream');
 const _isJson = require('is-json');
 const __get = Symbol('__get');
 const __config = Symbol('__config');
@@ -31,6 +32,10 @@ class Redis {
                 : value;
     }
 
+    stream( key ){
+        return streamify( this.client, key );
+    }
+
     *get( key ){
         return this[__get]( yield this.client.getAsync( key ));
     }
@@ -53,6 +58,10 @@ class Redis {
 
     *rpop( key ){
         return this[__get]( yield this.client.rpopAsync( key ));
+    }
+
+    *exists( key ){
+        return this[__get]( yield this.client.existsAsync( key ));
     }
 
     *execBatch( ...batch ){

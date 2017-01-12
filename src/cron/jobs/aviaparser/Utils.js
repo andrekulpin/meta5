@@ -26,6 +26,10 @@ module.exports = ['CronUtils', function( CronUtils ){
 			}
 		}
 
+		static generateKey({ source, from, to, dateFrom, dateTo }){
+			return [ source, from, to, dateFrom, dateTo ].join('_');
+		}
+
 		static getOTTDataObj( data ){
 			return OTTSEARCH_FUNCS( data );
 		}

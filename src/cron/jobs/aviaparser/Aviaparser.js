@@ -42,7 +42,7 @@ module.exports = [
 			}
 
 			*run( task ){
-				yield this.queue.push(task);
+				yield this.queue.push( task );
 			}
 
 			*getTask(){
@@ -54,11 +54,12 @@ module.exports = [
 			}
 
 			*[__parseTask]( task ){
-				let key = utils.getParser( task.source );
-				let params = utils.getOTTParams( task );
-				let config = this.config.sites[ key ];
-				let Parser = Parsers[ key ];
-				let parser = new Parser( task, config );
+				const key = utils.generateKey( task );
+				const name = utils.getParser( task.source );
+				const params = utils.getOTTParams( task );
+				const config = this.config.sites[ name ];
+				const Parser = Parsers[ name ];
+				const parser = new Parser( task, config );
 				let data = yield {
 					fares: parser.getFares(),
 					ottFares: api.getOTTFares( params )
@@ -77,10 +78,8 @@ module.exports = [
 					options: {},
 					task: task
 				}
-				debugger;
 				fares = yield parser.formatFares( obj );
-				debugger;
-				yield db.saveFares( fares );
+				yield db.saveParsedData( key, fares );
 			}
 
 			*updateConfig(){

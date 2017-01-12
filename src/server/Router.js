@@ -10,13 +10,15 @@ module.exports = [ 'controllers/**', function( controllers ){
 		//hook up all the controllers
 		_.each( controllers, ( controller ) => {
 			_.each( controller, ({ method, handler }, name ) => {
-				let url = join( mainUrl, _.toLower( name ));
+				let url = join( '/', mainUrl, _.toLower( name ));
 				router[ method || mainMethod ]( url, handler );
 			});
 		});
+
 		router['get']('/', function*(){
 			this.body = "hello there";
 		});
+
 		return router;
 	}
 }]

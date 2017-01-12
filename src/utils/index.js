@@ -21,8 +21,8 @@ class Utils {
 		}	
 	}
 
-	static *waitFor( fn ){
-		let slow = slowDown(1000, n => Math.min( n + 1000, 60000 ));
+	static *waitFor( fn, start = 1000, incr = 1000, max = 60000 ){
+		let slow = slowDown(start, n => Math.min( n + incr, max ));
 		while( !void 0 ){
 			let [ o ] = yield [ fn(), slow ];
 			if( o ){ break };

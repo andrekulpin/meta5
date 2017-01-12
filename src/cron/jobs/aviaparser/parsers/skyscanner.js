@@ -192,18 +192,11 @@ function *format( obj, airports ){
     }
 
     for(key in fares){
-
         var fare = fares[key];
-        try {
-            if(fare.list.length <= 1){
-                // skip proposals with only one participant
-                continue;
-            }    
-        } catch(err) {
-            debugger
+        if(fare.list.length <= 1){
+            // skip proposals with only one participant
+            continue;
         }
-
-
         for(var company in fare.list){
             if(fare.list[company].p === ''){
                 delete fare.list[company];

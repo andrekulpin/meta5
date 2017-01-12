@@ -28,9 +28,7 @@ module.exports = ['Utils', function( Utils ){
 					self.running--;
 					self.emit('unsaturated');
 				})
-				.catch(function(err){
-					console.log(err)
-				})
+				.catch( console.log )
 				return callback => {
 					callback();
 				}
@@ -39,10 +37,9 @@ module.exports = ['Utils', function( Utils ){
 		}
 
 		repeat(){
-			let self = this;
-			return new P(function(resolve){
-				self.once('unsaturated', resolve);
-			})
+			return new P( resolve => {
+				this.once('unsaturated', resolve);
+			});
 		}
 
 	}

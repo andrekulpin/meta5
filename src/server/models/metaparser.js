@@ -61,12 +61,21 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 			);
 		}
 
-		*saveFares( fares ){
-			return yield this.redis.set( 'metaparser_csv', fares, 'ex', 3600 )
+		*saveParsedData( key, fares ){
+			return yield this.redis.set( 'metaparser_avia_' + key, fares, 'ex', 3600 );
+		}
+
+		*isParseReady( key ){
+			return yield this.redis.exists( 'metaparser_avia_' + key );
+		}
+
+		getParsedData( key ){
+			return this.redis.stream( 'metaparser_avia_' + key );
+			//return yield this.redis.get( 'metaparser_avia_' + key );
 		}
 
 	}
 
-	return new MetaparserModel('metaparser');
+	return new MetaparserModel( 'metaparser' );
 
 }]

@@ -1,5 +1,5 @@
 {
-
+	"name": "metaparser",
 	"port": 8095,
 	"workerCount": 1,
 	"coreFolder": "src",
@@ -16,7 +16,9 @@
 	"systemUpdateInterval": 600000,
 	"databases":{
 		"redis":{
-			"config": {},
+			"config": {
+				"detect_buffers": true
+			},
 			"autoConnect": true
 		},
 		"riak":{
@@ -35,6 +37,11 @@
 			},
 			"autoConnect": false
 		}
+	},
+	"zmq": {
+		"addr": [
+			"tcp://127.0.0.1:5556",
+	        "tcp://127.0.0.1:5557"
+		]
 	}
-
 }

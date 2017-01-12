@@ -9,7 +9,6 @@ module.exports = ['src/utils', 'references', function*( Utils, getReference ){
 
 	let { data: agents } = yield getReference('userAgents');
 
-	debugger
 	class NetUtils extends Utils {
 
 		static customRequest( options ){
