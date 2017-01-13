@@ -1,16 +1,17 @@
 const fs = require('fs');
 const P = require('bluebird');
 
-module.exports = [ 'aviaparser/utils', 'models/metaparser', 'jobs/aviaparser/index.js', function*( utils, model, aviaparser ){
+module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'jobs/aviaparser/index.js', function*( utils, model, aviaparser ){
 
 	return {
 
 		getQueueLength: {
 			method: 'get',
+			params: ['group'],
 			handler: function*(){
 				this.log.info('getQueueLength');
 				let group = yield model.getGroup();
-				this.body = group;
+				this.body = 'group';
 			}
 		},
 
@@ -42,7 +43,7 @@ module.exports = [ 'aviaparser/utils', 'models/metaparser', 'jobs/aviaparser/ind
 
 		parseAviaTask: {
 			method: 'get',
-			keys: ['source'],
+			params: ['source', 'from', 'to', 'dateFrom'],
 			handler: function*(){
 				const { source, from, to, dateFrom, dataTo } = this.request.query;
 				const task = { source: 'skyscanner', from: 'MOW', to: 'LED', dateFrom: '2017-02-16'};

@@ -4,7 +4,7 @@ const _ = require('lodash');
 const fs = require('co-fs');
 const { join } = require('path');
 
-module.exports = ['Utils', function*( utils ){
+module.exports = ['src/utils', function*( utils ){
 
 	let dict = yield fs.readdir( join( __dirname, 'dict' ) );
 

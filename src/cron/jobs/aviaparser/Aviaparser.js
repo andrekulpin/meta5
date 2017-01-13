@@ -7,10 +7,10 @@ module.exports = [
 	'Queue',
 	'UniversalFormatter',
 	'BestPriceCutter',
-	'models/metaparser',
-	'aviaparser/utils', 
-	'api/avia', 
-	'parsers/*.js',
+	'models/aviaparser',
+	'aviaparser/utils',
+	'api/avia',
+	'parsers/**',
 
 	function( Queue, UniversalFormatter, BestPriceCutter, db, utils, api, Parsers ){
 

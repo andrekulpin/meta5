@@ -1,7 +1,7 @@
 const slowMo = require('slow-downer');
 const validateTime = require('cron-time-validator');
 
-module.exports = ['Utils', function( Utils ){
+module.exports = ['src/utils', function( Utils ){
 
 	class CronUtils extends Utils {
 

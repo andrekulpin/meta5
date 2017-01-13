@@ -3,7 +3,7 @@ const moment = require('moment');
 const _ = require('lodash');
 
 
-module.exports = ['models/metaparser', 'NetUtils', 'references', function( model, utils, getReference ){
+module.exports = ['models/aviaparser', 'NetUtils', 'references', function( model, utils, getReference ){
 
     const __getGeoName = Symbol('__getGeoName');
     const __getFares = Symbol('__getFares');

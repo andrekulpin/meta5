@@ -2,7 +2,7 @@ const P = require('bluebird');
 const co = require('co');
 const { EventEmitter } = require('events');
 
-module.exports = ['Utils', function( Utils ){
+module.exports = ['src/utils', function( Utils ){
 	
 	class Queue extends EventEmitter {
 

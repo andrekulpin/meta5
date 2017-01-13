@@ -1,6 +1,6 @@
 const P = require('bluebird');
 
-module.exports = ['CronUtils', 'models/metaparser', function( utils, db ){
+module.exports = ['CronUtils', 'models/aviaparser', function( utils, db ){
 
 	var count = 0
 
