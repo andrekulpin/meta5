@@ -1,4 +1,5 @@
 const config = require('cluster/config');
+const async = require('async');
 const _ = require('lodash');
 const { once, map } = require('co-dash');
 
@@ -15,7 +16,19 @@ module.exports = [ 'db/', 'connector', function( dbWrappers, Connector ){
 		let connectors = yield map( dbs, function*( name ){
 			return yield connector.init( name, dbWrappers[ name ] );
 		});
-		return _.zipObject( dbs, connectors );
+		let zipped = _.zipObject( dbs, connectors );
+		//shutdown all method
+		Object.defineProperty( zipped, 'close', {
+			__proto__: null,
+			value: function(){
+				for(var i in this){
+					let client = this[i];
+					client.end();
+				}
+			}
+		})
+
 	});
+
 	return initStorage;
 }];

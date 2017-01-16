@@ -13,7 +13,7 @@
 	"mainConfig": "config.json",
 	"mainMethod": "get",
 	"mainDb": "riak",
-	"systemUpdateInterval": 600000,
+	"systemUpdateInterval": 300000,
 	"databases":{
 		"redis":{
 			"config": {

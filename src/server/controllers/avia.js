@@ -1,7 +1,7 @@
 const fs = require('fs');
 const P = require('bluebird');
 
-module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'jobs/aviaparser/index.js', function*( utils, model, aviaparser ){
+module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'jobs/aviaparser/index.js', 'api/avia', function*( utils, model, aviaparser, apiAvia ){
 
 	return {
 
@@ -37,12 +37,13 @@ module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'jobs/aviaparser/ind
 			method: 'get',
 			handler: function*(){
 				this.log.info('getBoy');
-				this.body = 'good boy'
+				this.body = 'jasjdalskjl';
 			}
 		},
 
 		parseAviaTask: {
 			method: 'get',
+			persmissions: ['metaparser'],
 			params: ['source', 'from', 'to', 'dateFrom'],
 			handler: function*(){
 				const { source, from, to, dateFrom, dataTo } = this.request.query;

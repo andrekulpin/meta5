@@ -10,6 +10,10 @@ module.exports = ['BaseModel', function( BaseModel ){
 			return yield this.riak.get('metaparser/system_whitelist');
 		}
 
+		*getUser( user ){
+			return yield this.redis.get('metaparser_system_users_' + user);
+		}
+
 	}
 
 	return new SystemModel('system');

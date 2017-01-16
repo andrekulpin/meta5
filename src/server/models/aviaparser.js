@@ -9,39 +9,27 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 		}
 
 		*getConfig(){
-
 			return yield this.riak.get('metaparser/aviaparser_config');
-
 		}
 
 		*getCodes(){
-
 			return yield this.riak.get('metaparser/skyscannerCityCodes');
-
 		}
 
 		*getGroup(){
-
 			return yield this.redis.get( 'metaparser_aviaparser_group' );
-
 		}
 
 		*getTask(){
-
 			return yield this.redis.lpop( 'metaparser_aviaparser_queue' );
-
 		}
 
 		*getLock(){
-
 			return yield this.redis.get( 'metaparser_aviaparser_lock' );
-
 		}
 
 		*setLock( secs = 5 ){
-
 			return yield this.redis.set( 'metaparser_aviaparser_lock', 1, 'nx', 'ex', secs );
-
 		}
 
 		*saveFares(){
@@ -49,8 +37,10 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 		}
 
 		*generateTasks( queries ){
-			let client = yield this.vertica.createClient();
-			return map( queries, query => client.get( query ));
+			const client = yield this.vertica.createClient();
+			const res = yield map( queries, query => client.get( query ));
+			client.end();
+			return res;
 		}
 
 		*getWhitelist(){
@@ -77,7 +67,6 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 			return this.redis.stream( 'metaparser_aviaparser_' + key );
 			//return yield this.redis.get( 'metaparser_avia_' + key );
 		}
-
 	}
 
 	return new AviaparserModel( 'aviaparser' );

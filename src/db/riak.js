@@ -58,6 +58,10 @@ class Riak {
         })
     }
 
+    end( callback ){
+        return this.client.stop( callback );
+    }
+
 }
 
 module.exports = Riak;

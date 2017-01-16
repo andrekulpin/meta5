@@ -1,7 +1,8 @@
 const koa = require('koa');
 const use = require('koa-use');
+const Session = require('koa-session');
 
-module.exports = ['Router', 'Logger', 'Whitelist', 'Errors', function( Router, Logger, Whitelist, Errors ){
+module.exports = ['Router', 'Logger', 'Auth', 'Whitelist', 'Errors', function( Router, Logger, Auth, Whitelist, Errors ){
 	return function*( config ){
 		let app = use( koa() );
 		app.use([
@@ -9,10 +10,12 @@ module.exports = ['Router', 'Logger', 'Whitelist', 'Errors', function( Router, L
 			Errors(),
 			Whitelist(),
 			Logger( config ),
+			Session( app ),
+			Auth(),
 			yield Router( config )
 
 		]);
-		app.listen( config.port );
 		console.log('Server is listening on port ' + config.port + '...');
+		return app.listen( config.port );
 	}
 }];

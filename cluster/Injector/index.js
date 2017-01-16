@@ -28,7 +28,6 @@ module.exports = function*( root, ignoreFiles ){
 }
 
 class Injector {
-
 	constructor( root, ignoreFiles ){
 		this.root = root;
 		this.ignore = ignoreFiles;
@@ -36,16 +35,14 @@ class Injector {
 		this.factories = {};
 		this.collection = [];
 	}
-
 	/*
 		inner promise-based injection method;
 		in case we have race conditions between dependencies;
 		we wrap them in promises
 	*/
-
 	[__inject]( factory ){
 		const self = this;
-		return new P( ( done, err ) => {
+		return new P( ( done, reject ) => {
 			co(function*(){
 				var dependencies, args;
 				let typeName = getType( factory );
@@ -54,7 +51,7 @@ class Injector {
 						dependencies = argsList( factory );
 					break;
 					case 'array':
-						dependencies = factory;
+						dependencies = factory.slice();
 						factory = dependencies.pop();
 					break;
 					default:
@@ -63,26 +60,34 @@ class Injector {
 				args = yield _.map( dependencies, function*( dependency ){
 					return yield self.get( dependency );
 				});
-				
+				let fac;
 				if( isGenerator(factory) ){
-					return done( yield factory( ...args ) );
+					try{
+						fac = yield factory( ...args )
+					} catch( err ){
+						throw new Error( err );
+					}
+					return done( fac );
 				}
-				return done( factory( ...args ) );
+				try{
+					fac = factory( ...args )
+				} catch( err ){
+					console.log(dependencies)
+					throw new Error( err );	
+				}
+				return done( fac );
 			})
-			.catch( err );
+			.catch( reject );
 		})
 	}
-
 	/*
 		basic public get method
 		escapsulating both inner search method and inject method
 	*/
-
 	*get( name ){
-		const matchAll = name.indexOf('**') > -1;
-		const allFiles = name.indexOf('*.') > -1;
+		const matchAll = name.indexOf('*') > -1;
 		const isFolder = name[name.length - 1] === '/';
-		if( matchAll || isFolder || allFiles ){
+		if( matchAll || isFolder ){
 			const keys = this[__find]( name );
 			let [ deps, facs ] = _.partition( keys, key => this.dependencies[ key ] );
 			deps = deps && ( yield this[__getDeps]( deps ));
@@ -125,7 +130,6 @@ class Injector {
 			this.register( name, module );
 		})
 	}
-
 	//load the structure of the application starting from the root folder
 	*[__walk]( root, ignore ){
 		return _.map( yield walk( root, { ignore } ), file => {
@@ -136,7 +140,6 @@ class Injector {
 			}
 		});
 	}
-
 	[__parseName]( key ){
 		let base = basename( key, '.js' );
 		if( base === 'index' ){
@@ -145,11 +148,9 @@ class Injector {
 		}
 		return base;
 	}
-
 	[__find]( name ){
 		return search( name, this.collection );
 	}
-
 	*[__getDeps]( obj ){
 		const self = this;
 		const mapped = yield co_.map( obj, function*( key ){
@@ -158,7 +159,6 @@ class Injector {
 		})
 		return _.zipObject( _.map( obj, self[__parseName] ), mapped );
 	}
-
 	*[__getFacs]( obj ){
 		const self = this;
 		return _.zipObject(
@@ -172,7 +172,6 @@ class Injector {
 			})
 		)
 	}
-
 }
 
 function isPromise( obj ){

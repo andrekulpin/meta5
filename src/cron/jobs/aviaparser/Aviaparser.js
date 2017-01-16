@@ -79,6 +79,7 @@ module.exports = [
 					task: task
 				}
 				fares = yield parser.formatFares( obj );
+				console.log(fares)
 				yield db.saveParsedData( key, fares );
 			}
 

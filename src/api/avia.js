@@ -1,32 +1,29 @@
 const _ = require('lodash');
 const qs = require('querystring');
+const { join } = require('path');
 
-module.exports = ['NetUtils', 'models/api', function*( NetUtils, db ){
+module.exports = ['NetUtils', 'models/api', 'system_updater', function*( NetUtils, db, initUpdater ){
 
-	const config = yield db.getConfig();
-	const { credentials } = config;
-	const { apis } = config;
-
-/*	_.each( config.apis['avia'], ( options, name ) => {
-		let hash = ( new Buffer(credentials.username + ':' + credentials.password).toString('base64') );
-		options.headers['Authorization'] = hash;
-		let request = NetUtils.customRequest({
-			url: options.url,
-			method: options.method,
-			headers: options.headers,
-			timeout: options.timeout
-		});
-		return function*( body ){
-			return yield request({ body }).exec();
-		}
-	});*/
+	var config = yield db.getConfig();
+	
+	const updater = initUpdater([ db.getConfig.bind(db) ]);
+	updater.on('updated', data => {
+		config = data.config;
+	});
 
 	return {
 
+		*auth( body ){
+			const options = config.methods['auth'];
+			options.body = qs.stringify( body );
+			const request = NetUtils.customRequest( options );
+			const { body: data }  = yield request.exec();
+			return data;
+		},
+
 		*getOTTFares( body ){
-			const options = apis[ 'avia' ][ 'getOTTFares' ];
-			const hash = ( Buffer.from(credentials.username + ':' + credentials.password).toString('base64') );
-			options.headers['Authorization'] += hash;
+			const options = config.methods['getOTTFares'];
+			options.headers['Authorization'] += getHash(config.creds);
 			options.body = qs.stringify( body );
 			const request = NetUtils.customRequest( options );
 			const { body: data }  = yield request.exec();
@@ -36,3 +33,8 @@ module.exports = ['NetUtils', 'models/api', function*( NetUtils, db ){
 	}
 
 }]
+
+function getHash( creds ){
+	return Buffer.from(creds.username + ':' + creds.password).toString('base64');
+}
+
