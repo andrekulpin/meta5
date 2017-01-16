@@ -39,7 +39,7 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 		*generateTasks( queries ){
 			const client = yield this.vertica.createClient();
 			const res = yield map( queries, query => client.get( query ));
-			client.end();
+			client.end(() => {});
 			return res;
 		}
 

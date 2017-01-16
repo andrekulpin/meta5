@@ -41,8 +41,8 @@ class Vertica {
 		});
 	}
 
-	end(){
-		return this.client.end();
+	end( callback ){
+		return this.client.end( callback );
 	}
 
 

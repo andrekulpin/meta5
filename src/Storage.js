@@ -18,17 +18,39 @@ module.exports = [ 'db/', 'connector', function( dbWrappers, Connector ){
 		});
 		let zipped = _.zipObject( dbs, connectors );
 		//shutdown all method
+
 		Object.defineProperty( zipped, 'close', {
 			__proto__: null,
-			value: function(){
+			value: function( callback ){
+				let exits = [];
 				for(var i in this){
 					let client = this[i];
-					client.end();
+					exits.push(client.end.bind(client));
 				}
+				async.parallel( exits, callback );
 			}
-		})
+		});
+
+		return zipped;
 
 	});
 
 	return initStorage;
 }];
+
+
+function asyncify( fn ){
+	return function( ...args ){
+		var callback = args.pop();
+		var err;
+		var res;
+		try{
+			res = fn();	
+		} catch( err ){
+			err = err;
+		}
+		callback(err, res);
+	}
+}
+
+

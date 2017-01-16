@@ -16,14 +16,11 @@ exports.init = function( config ){
 			//injector.get('src/cron')
 		];
 		//init sequentially all services
-		$$['logger'] = initLogger( config );
 		$$['storage'] = yield initStorage( config );
-		$$['server'] = yield initServer( config, $$['logger'] );
-		$$['cron'] = yield initCron( config, $$['logger'] );
+		$$['server'] = yield initServer( config );
+		$$['cron'] = yield initCron( config );
 	})
 	.catch(function( err ){
-
-		$$['logger'].error( 'Application crash: ', err );
 
 		async.each( [ 
 			$$['server'], 

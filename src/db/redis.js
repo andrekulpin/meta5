@@ -79,8 +79,8 @@ class Redis {
         return multi.execAsync();
     }
 
-    end(){
-        return this.client.quit();
+    end( callback ){
+        return this.client.quit( callback );
     }
 
 }
