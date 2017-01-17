@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const uuid = require('node-uuid').v4;
+const config = require('cluster/config');
 const zmq = require('zmq');
 const bunyan = require('bunyan');
 
@@ -37,12 +37,7 @@ module.exports = function( config ){
 	_.each( addr, ad => socket.connect( ad ));
 	const stream = { type: 'raw', stream: new RawStream( socket ) }
 	const options = getLogOptions({ name: config.name, streams: [ stream ] })
-	const log = bunyan.createLogger( getLogOptions( options ));
-	return function*( next ){
-		const requestId = uuid();
-		this.log = log.child({ requestId });
-		yield next;
-	}
+	return bunyan.createLogger( getLogOptions( options ));
 }
 
 function getLogOptions( options ){

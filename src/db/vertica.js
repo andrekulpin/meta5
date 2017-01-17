@@ -42,7 +42,8 @@ class Vertica {
 	}
 
 	end( callback ){
-		return this.client.end( callback );
+		return this.client 
+		&& this.client.end( callback );
 	}
 
 

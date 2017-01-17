@@ -3,20 +3,22 @@ const P = require('bluebird');
 const __parseTask = Symbol('__parseTask');
 
 module.exports = [
-
+	
 	'Queue',
 	'UniversalFormatter',
 	'BestPriceCutter',
 	'models/aviaparser',
 	'aviaparser/utils',
 	'api/avia',
-	'parsers/**',
+	'aviaparser/modules/',
+	'BaseService',
 
-	function( Queue, UniversalFormatter, BestPriceCutter, db, utils, api, Parsers ){
+	function( Queue, UniversalFormatter, BestPriceCutter, db, utils, api, Parsers, BaseService ){
 
-		class Aviaparser {
+		class Aviaparser extends BaseService {
 
 			constructor( config ){
+				super('aviaparser');
 				this.config = config;
 				this.queue = new Queue( this[__parseTask].bind(this), config.concurrency );
 				this.tasks = [];
@@ -54,6 +56,7 @@ module.exports = [
 			}
 
 			*[__parseTask]( task ){
+				this.log.info(task)
 				const key = utils.generateKey( task );
 				const name = utils.getParser( task.source );
 				const params = utils.getOTTParams( task );

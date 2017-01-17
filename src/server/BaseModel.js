@@ -2,9 +2,8 @@ const config = require('cluster/config');
 const { each } = require('lodash');
 
 module.exports = [ 'storage', function*( getStorage ){
-
 	//get a cached connection...
-	let storage = yield getStorage();
+	let storage = yield getStorage( config );
 	
 	class BaseModel {
 

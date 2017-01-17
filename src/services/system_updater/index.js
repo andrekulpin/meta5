@@ -8,17 +8,16 @@ module.exports = function( fn, interval ){
 	class Updater extends EventEmitter {
 		constructor( fn ){
 			super();
-			this.__interval = interval;
-			this.__fn = fn;
+			this.interval = interval;
+			this.fn = fn;
 		}
 
 		init(){
 			const self = this;
 			defer.setInterval(function*(){
-				console.log('updated')
-				let res = yield _.map( self.__fn, fn => fn() );
+				let res = yield _.map( self.fn, fn => fn() );
 				self.emit('updated', res);
-			}, self.__interval || systemUpdateInterval );
+			}, self.interval || systemUpdateInterval );
 		}
 	}
 

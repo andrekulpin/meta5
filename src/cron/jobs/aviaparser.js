@@ -1,4 +1,4 @@
-module.exports = ['jobs/aviaparser/aviaparser', 'CronUtils', 'models/aviaparser', function*( Aviaparser, utils, db ){
+module.exports = ['services/parser/aviaparser', 'CronUtils', 'models/aviaparser', function*( Aviaparser, utils, db ){
 
 	let config = yield db.getConfig();
 	const aviaparser = new Aviaparser( config );

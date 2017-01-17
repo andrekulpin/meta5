@@ -2,7 +2,7 @@ const _ = require('lodash');
 const defer = require('co-defer');
 const { each } = require('co-dash');
 
-module.exports = ['jobs/*/index', 'CronUtils', 'models/cron', 'system_updater', function( jobs, utils, db, initUpdater ){
+module.exports = ['jobs/**', 'CronUtils', 'models/cron', 'system_updater', function( jobs, utils, db, initUpdater ){
 	return function*( config ){
 		//Initiates all the crons
 		let { crons } = yield db.getConfig();
@@ -24,7 +24,5 @@ module.exports = ['jobs/*/index', 'CronUtils', 'models/cron', 'system_updater', 
 			}
 
 		});
-
-		//yield each( jobs, initJob => initJob );
 	}
 }]

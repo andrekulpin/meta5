@@ -2,7 +2,7 @@ const koa = require('koa');
 const use = require('koa-use');
 const Session = require('koa-session');
 
-module.exports = ['Router', 'Logger', 'Auth', 'Whitelist', 'Errors', function( Router, Logger, Auth, Whitelist, Errors ){
+module.exports = ['Router', 'HttpLogger', 'Auth', 'Whitelist', 'Errors', function( Router, Logger, Auth, Whitelist, Errors ){
 	return function*( config ){
 		let app = use( koa() );
 		app.use([

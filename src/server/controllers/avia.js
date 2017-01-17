@@ -1,7 +1,7 @@
 const fs = require('fs');
 const P = require('bluebird');
 
-module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'jobs/aviaparser/index.js', 'api/avia', function*( utils, model, aviaparser, apiAvia ){
+module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'parser/aviaparser', 'api/avia', function*( utils, model, aviaparser, apiAvia ){
 
 	return {
 
