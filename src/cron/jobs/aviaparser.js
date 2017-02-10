@@ -1,10 +1,12 @@
+const P = require('bluebird');
+
 module.exports = ['services/parser/aviaparser', 'CronUtils', 'models/aviaparser', function*( Aviaparser, utils, db ){
 
 	let config = yield db.getConfig();
 	const aviaparser = new Aviaparser( config );
 
-	return function*( task ){
-		task = task || ( yield aviaparser.getTask() );
+	return function*(){
+		let task = yield aviaparser.getTask();
 		if(!task){
 			yield aviaparser.updateConfig();
 			return yield aviaparser.generateTasks();
@@ -13,3 +15,11 @@ module.exports = ['services/parser/aviaparser', 'CronUtils', 'models/aviaparser'
 	}
 
 }];
+
+function stub(n){
+	return new P((resolve) => {
+		setTimeout(function(){
+			resolve(n)
+		}, 2000)
+	})
+}

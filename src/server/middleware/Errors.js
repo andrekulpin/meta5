@@ -1,9 +1,7 @@
 module.exports = function(){
 	return function*( next ){
 		try {
-
 			yield next;
-			
 		} catch( err ){
 			if(err.status === 401){
 				err.message = 'Authentication is needed';

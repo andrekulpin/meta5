@@ -20,6 +20,10 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 			return yield this.redis.get( 'metaparser_aviaparser_group' );
 		}
 
+		*insertTask( task ){
+			return yield this.redis.rpush( 'metaparser_aviaparser_queue', task );
+		}
+
 		*getTask(){
 			return yield this.redis.lpop( 'metaparser_aviaparser_queue' );
 		}
@@ -28,8 +32,8 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 			return yield this.redis.get( 'metaparser_aviaparser_lock' );
 		}
 
-		*setLock( secs = 5 ){
-			return yield this.redis.set( 'metaparser_aviaparser_lock', 1, 'nx', 'ex', secs );
+		*setLock( time = 5 ){
+			return yield this.redis.set( 'metaparser_aviaparser_lock', 1, 'nx', 'ex', time );
 		}
 
 		*saveFares(){
@@ -55,8 +59,8 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 			);
 		}
 
-		*saveParsedData( key, fares ){
-			return yield this.redis.set( 'metaparser_aviaparser_' + key, fares, 'ex', 3600 );
+		*saveParsedData( key, fares, time = 3600 ){
+			return yield this.redis.set( 'metaparser_aviaparser_' + key, fares, 'ex', time );
 		}
 
 		*isParseReady( key ){

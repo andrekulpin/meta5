@@ -52,7 +52,8 @@ function __execRequest( { url, method, headers, timeout, proxy, body } ){
 		json: true,
 		gzip: true
 	})
-	.then( ({ body, headers }) => {
-		return { headers, body }
-	});	
+	.then(({ headers, body }) => {
+		return { headers, body };
+	});
 }
+//http://lum-customer-onetwotrip-zone-sky-session-147024:st2isitwi509@servercountry-nl.zproxy.luminati.io:22225

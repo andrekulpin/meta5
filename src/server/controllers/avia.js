@@ -1,7 +1,7 @@
 const fs = require('fs');
 const P = require('bluebird');
 
-module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'parser/aviaparser', 'api/avia', function*( utils, model, aviaparser, apiAvia ){
+module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'api/avia', function*( utils, model, apiAvia ){
 
 	return {
 
@@ -46,13 +46,16 @@ module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'parser/aviaparser',
 			persmissions: ['metaparser'],
 			params: ['source', 'from', 'to', 'dateFrom'],
 			handler: function*(){
-				const { source, from, to, dateFrom, dataTo } = this.request.query;
-				const task = { source: 'skyscanner', from: 'MOW', to: 'LED', dateFrom: '2017-02-16'};
+				debugger;
+				const task = this.request.query;
+				//const task = { source: 'skyscanner', from: 'MOW', to: 'LED', dateFrom: '2017-02-16'};
 				const key = utils.generateKey( task );
-				yield aviaparser( task );
+				debugger;
+				yield model.insertTask( task );
 				while( !( yield model.isParseReady( key ) )){
 					yield P.delay( 3000 );
 				}
+				debugger;
 				this.body = model.getParsedData( key );
 			}
 		}

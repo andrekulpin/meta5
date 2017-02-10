@@ -3,19 +3,21 @@ const moment = require('moment');
 const _ = require('lodash');
 
 
-module.exports = ['models/aviaparser', 'NetUtils', 'references', function( model, utils, getReference ){
+module.exports = ['models/aviaparser', 'NetUtils', 'references', 'BaseService', function( model, utils, getReference, BaseService ){
 
     const __getGeoName = Symbol('__getGeoName');
     const __getFares = Symbol('__getFares');
     
-    class SkyscannerParser {
+    class SkyscannerParser extends BaseService {
 
         constructor( task, config ){
+            super();
             this.task = task;
             this.config = config;
         }
 
         *getFares(){
+            this.log.info('getFares_0');
             const { from, to, dateFrom, dateTo } = this.task;
             const codes = yield model.getCodes();
             const [ codeFrom, codeTo ] = yield [
@@ -24,15 +26,19 @@ module.exports = ['models/aviaparser', 'NetUtils', 'references', function( model
             ];
             let body = getBody( codeFrom, codeTo, dateFrom, dateTo );
             const { body: data } = yield this[ __getFares ]( body );
-            return parseResponse( data );
+            var parsedFares = parseResponse( data );
+            this.log.info('getFares_success');
+            return parsedFares;
         }
 
         *formatFares( obj ){
+            this.log.info('formatFares_0');
             let { data: airports } = yield getReference('airports');
             return yield format( obj, airports );
         }
 
         *[__getGeoName]( city ){
+            this.log.info('getGeoName_0', city);
             const { headers } = this.config;
             headers['user-agent'] = utils.getUserAgent();
             const proxy = utils.getProxy( this.config.proxy );
@@ -62,7 +68,7 @@ module.exports = ['models/aviaparser', 'NetUtils', 'references', function( model
                 body,
                 timeout: 15000
             });
-            const response = yield request.exec();
+            var response = yield request.exec();
             return response;
         }
 

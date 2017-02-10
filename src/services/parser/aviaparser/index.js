@@ -1,6 +1,13 @@
 const _ = require('lodash');
 const P = require('bluebird');
 const __parseTask = Symbol('__parseTask');
+const MAP = {
+	source: 'source',
+	destination: 'to',
+	depart_date: 'dateFrom',
+	return_date: 'dateTo',
+	origin: 'from'
+}
 
 module.exports = [
 	
@@ -18,7 +25,7 @@ module.exports = [
 		class Aviaparser extends BaseService {
 
 			constructor( config ){
-				super('aviaparser');
+				super();
 				this.config = config;
 				this.queue = new Queue( this[__parseTask].bind(this), config.concurrency );
 				this.tasks = [];
@@ -27,18 +34,14 @@ module.exports = [
 			*generateTasks(){
 				let locked = yield db.setLock();
 				if( locked ){
-					let group = yield db.getGroup()
-					let active = _.filter( sites, {'active': true, 'group': +group } );
+					this.log.info('generateTasks_0');
+					let group = yield db.getGroup();
+					let active = _.filter( this.config.sites, {'active': true, 'group': +group } );
 					let queries = _.map( active, ({ top, query }) => utils.renderString( query, { top }));
 					let res = yield db.generateTasks( queries );
-					let tasks = _(res)
-					.flatten()
-					.map( t => _.pick( t, _.keys( MAP )))
-					.map( t => _.mapKeys( t, ( v, k ) => MAP[ k ]))
-					.compact()
-					.shuffle()
-					.value()
-
+					let tasks = unifiyTasks(res);
+					yield db.setLockGroupTasks( tasks );
+					this.log.info('generateTasks_success', tasks.length);
 				}
 				yield utils.waitFor( db.getLock.bind( db ));
 			}
@@ -48,42 +51,43 @@ module.exports = [
 			}
 
 			*getTask(){
-				var rand = Math.random() * 1000;
-				return yield stub({
-					source: 'skyscanner', from: 'MOW', to: 'LED', dateFrom: '2017-02-16'
-				})
-				//return yield db.getTask();
+				return yield db.getTask();
 			}
 
 			*[__parseTask]( task ){
-				this.log.info(task)
+				this.log.info('parseTask_0', task);
 				const key = utils.generateKey( task );
 				const name = utils.getParser( task.source );
 				const params = utils.getOTTParams( task );
 				const config = this.config.sites[ name ];
 				const Parser = Parsers[ name ];
 				const parser = new Parser( task, config );
-				let data = yield {
-					fares: parser.getFares(),
-					ottFares: api.getOTTFares( params )
+				try {
+					var data = yield {
+						fares: parser.getFares(),
+						ottFares: api.getOTTFares( params )
+					}
+					let { fares, ottFares } = data;
+					let _data = {};
+					_data.fares = fares;
+					_data.ottData = ottFares;
+					_data.parsingDate = new Date();
+					_data.parserMode  = 'auto';
+					let obj = {
+						data: utils.getOTTDataObj( _data ),
+						need: task.source,
+						universalFormater: UniversalFormatter,
+						BestPricesCutter: BestPriceCutter,
+						options: {},
+						task: task
+					}
+					fares = yield parser.formatFares( obj );
+					yield db.saveParsedData( key, fares );
+				} catch( err ){
+					this.log.error('parseTask_error', err);
+					return yield db.saveParsedData( key, 'Parse_error', 10 );
 				}
-				let { fares, ottFares } = data;
-				let _data = {};
-				_data.fares = fares;
-				_data.ottData = ottFares;
-				_data.parsingDate = new Date();
-				_data.parserMode  = 'auto';
-				let obj = {
-					data: utils.getOTTDataObj( _data ),
-					need: task.source,
-					universalFormater: UniversalFormatter,
-					BestPricesCutter: BestPriceCutter,
-					options: {},
-					task: task
-				}
-				fares = yield parser.formatFares( obj );
-				console.log(fares)
-				yield db.saveParsedData( key, fares );
+				this.log.info('parseTask_success');
 			}
 
 			*updateConfig(){
@@ -96,6 +100,17 @@ module.exports = [
 
 }]
 
+function unifiyTasks(tasks){
+	return (
+		_(tasks)
+		.flatten()
+		.map( t => _.pick( t, _.keys( MAP )))
+		.map( t => _.mapKeys( t, ( v, k ) => MAP[ k ]))
+		.compact()
+		.shuffle()
+		.value()
+	)
+}
 
 function stub(n){
 	return new P((resolve)=>{

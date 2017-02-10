@@ -5,7 +5,7 @@ module.exports = ['src/logger', function( getLogger ){
 		const log = getLogger( config );
 		return function*( next ){
 			const requestId = uuid();
-			this.log = log.child({ requestId });
+			this.log = log.child({ service: 'HttpRequest', requestId });
 			yield next;
 		}
 	}

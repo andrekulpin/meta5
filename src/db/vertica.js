@@ -12,14 +12,6 @@ class Vertica {
 	}
 
 	*createClient( config ){
-		if(!this[__pool__]){
-			this[__pool__] = this[__driver__].Pool( config || this[__config__] );
-			return new P( ( resolve ) => {
-				this.client = this[__pool__].connect().then(resolve);
-			});
-		}
-
-
 		let client = yield new P((resolve) => {
 			return new this[__driver__].Pool( config || this[__config__] )
 			.connect()

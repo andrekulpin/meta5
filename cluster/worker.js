@@ -11,27 +11,25 @@ exports.init = function( config ){
 			injector.get('src/storage'),
 			injector.get('src/server'),
 			injector.get('src/logger'),
-			//injector.get('src/cron')
+			injector.get('src/cron')
 		];
 		//init sequentially all services
 		app['storage'] = yield initStorage( config );
 		app['server'] = yield initServer( config );
-		app['logger'] = initLogger( config ).child({app: 123123});
-		//$$['cron'] = yield initCron( config );
-
+		app['logger'] = initLogger( config ).child({service: 'Worker'});
+		app['cron'] = yield initCron( config );
 	})
 	.catch( err => {
 		gracefulExit(app, err);
 	});
-
 	process.on('uncaughtException', ( err ) => {
 		gracefulExit(app, err);
 	});
-
 }
 
 function gracefulExit( app, err ){
-	app['logger'].child().info(`Critical crash: ${err}`);
+	debugger;
+	app['logger'].error(`Critical crash: ${err}`);
 	app['server'].close();
 	app['storage'].close();
 	process.exit( 1 );

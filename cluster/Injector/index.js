@@ -18,7 +18,7 @@ const walk = require('co-walk');
 const search = require('./search');
 
 //ERROR CONSTANTS
-const __UNRESOLVED_ERROR__ = name => 'Too many dependencies found with ' + name;
+const __UNRESOLVED_ERROR__ = name => 'Unresolved dependencies: ' + name;
 const __NOT_FOUND_ERROR__ = name => 'Cannot find a module ' + name;
 
 module.exports = function*( root, ignoreFiles ){
@@ -65,6 +65,7 @@ class Injector {
 					try{
 						fac = yield factory( ...args )
 					} catch( err ){
+						debugger;
 						throw new Error( err );
 					}
 					return done( fac );
@@ -72,7 +73,6 @@ class Injector {
 				try{
 					fac = factory( ...args )
 				} catch( err ){
-					console.log(dependencies)
 					throw new Error( err );	
 				}
 				return done( fac );
@@ -101,7 +101,7 @@ class Injector {
 		const key = uncast( this[__find]( name ) );
 
 		if(_.isArray( key )){
-			throw new Error(__UNRESOLVED_ERROR__( name ));	
+			throw new Error(__UNRESOLVED_ERROR__( name ));
 		}
 
 		let found;
@@ -109,7 +109,7 @@ class Injector {
 		if( found = this.dependencies[ key ] ){
 			return isPromise( found ) ? ( yield found ) : found;
 		}
-
+ 
 		if( found = this.factories[ key ] ){
 			this.dependencies[ key ] = this[__inject]( found );
 			this.dependencies[ key ] = yield this.dependencies[ key ];
