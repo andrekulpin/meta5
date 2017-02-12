@@ -11,10 +11,9 @@ describe('NetUtils', function(){
 
 	before( () => {
 		const requestStub = ( url, cb ) => setImmediate( () => cb( null, OK ) );
-		const UtilsDep = require( 'core/utils' );
-		const getNetUtils = proxyQuire( 'core/utils/NetUtils', { 'request': requestStub } );
+		const UtilsDep = require( 'src/utils' );
+		const getNetUtils = proxyQuire( 'src/utils/NetUtils', { 'request': requestStub } );
 		netUtils = getModule( getNetUtils )( UtilsDep );
-
 	})
 
 	it('should customRequest ok', function*(){

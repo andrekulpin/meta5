@@ -18,7 +18,7 @@ describe('BaseParser', function(){
 	var initBaseParser;
 
 	before(() => {
-		const getBaseParser = rewire('core/cron/jobs/metaparser/Parser');
+		const getBaseParser = rewire('src/cron/jobs/aviaparser');
 		getBaseParser.__set__('MIN', 10);
 		initBaseParser = getModule( getBaseParser );
 	});

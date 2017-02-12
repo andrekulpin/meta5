@@ -1,9 +1,9 @@
 const { expect } = require('chai');
 const rewire = require('rewire');
 
-let testModule = rewire('core/Utils');
+let testModule = rewire('src/utils');
 
-describe('core/Utils', function(){
+describe('src/Utils', function(){
 
 	it('should renderString ok', function( done ){
 		const wantedGreeting = 'hello there Mark';

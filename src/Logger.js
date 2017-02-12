@@ -42,6 +42,7 @@ class RawStream {
 }
 
 module.exports = function( __config ){
+	//console.log(22222)
 	__config = __config || config;
 	const { addr } = __config['zmq'];
 	const socket = zmq.socket('push');

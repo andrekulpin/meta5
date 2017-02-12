@@ -1,8 +1,9 @@
 const P = require('bluebird');
 
 module.exports = ['services/parser/aviaparser', 'CronUtils', 'models/aviaparser', function*( Aviaparser, utils, db ){
-
+	
 	let config = yield db.getConfig();
+	
 	const aviaparser = new Aviaparser( config );
 
 	return function*(){

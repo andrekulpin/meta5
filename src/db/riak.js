@@ -33,7 +33,7 @@ class Riak {
                 }
                 let value = _.get( data, 'values[0].value' );
                 if( !value ){
-                    return reject();
+                    return reject('Riak key does not exist.');
                 }
                 resolve( value );
             });

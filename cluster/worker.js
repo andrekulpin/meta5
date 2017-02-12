@@ -28,7 +28,7 @@ exports.init = function( config ){
 }
 
 function gracefulExit( app, err ){
-	debugger;
+	console.log(err);
 	app['logger'].error(`Critical crash: ${err}`);
 	app['server'].close();
 	app['storage'].close();

@@ -12,7 +12,7 @@ const co = require('co');
 const co_ = require('co-dash');
 const argsList = require('args-list');
 const { readdir, stat } = require('co-fs');
-const { join, basename } = require('path');
+const path = require('path');
 const uncast = require('uncast');
 const walk = require('co-walk');
 const search = require('./search');
@@ -40,7 +40,7 @@ class Injector {
 		in case we have race conditions between dependencies;
 		we wrap them in promises
 	*/
-	[__inject]( factory ){
+	[__inject]( factory, relativeDir ){
 		const self = this;
 		return new P( ( done, reject ) => {
 			co(function*(){
@@ -58,14 +58,13 @@ class Injector {
 						throw new Error(__UNRESOLVED_ERROR__( factory ));
 				}
 				args = yield _.map( dependencies, function*( dependency ){
-					return yield self.get( dependency );
+					return yield self.get( dependency, relativeDir );
 				});
 				let fac;
 				if( isGenerator(factory) ){
 					try{
 						fac = yield factory( ...args )
 					} catch( err ){
-						debugger;
 						throw new Error( err );
 					}
 					return done( fac );
@@ -84,9 +83,13 @@ class Injector {
 		basic public get method
 		escapsulating both inner search method and inject method
 	*/
-	*get( name ){
+	*get( name, relativeDir ){
 		const matchAll = name.indexOf('*') > -1;
 		const isFolder = name[name.length - 1] === '/';
+		const isLocal = name.indexOf('./') > -1;
+		if(isLocal){
+			name = path.resolve(relativeDir, name);
+		}
 		if( matchAll || isFolder ){
 			const keys = this[__find]( name );
 			let [ deps, facs ] = _.partition( keys, key => this.dependencies[ key ] );
@@ -101,6 +104,9 @@ class Injector {
 		const key = uncast( this[__find]( name ) );
 
 		if(_.isArray( key )){
+			if(!key.length){
+				throw new Error(__NOT_FOUND_ERROR__( name ));
+			}
 			throw new Error(__UNRESOLVED_ERROR__( name ));
 		}
 
@@ -111,7 +117,8 @@ class Injector {
 		}
  
 		if( found = this.factories[ key ] ){
-			this.dependencies[ key ] = this[__inject]( found );
+			const { dir } = path.parse( key );
+			this.dependencies[ key ] = this[__inject]( found, dir );
 			this.dependencies[ key ] = yield this.dependencies[ key ];
 			delete this.factories[ key ];
 			return this.dependencies[ key ];
@@ -133,15 +140,15 @@ class Injector {
 	//load the structure of the application starting from the root folder
 	*[__walk]( root, ignore ){
 		return _.map( yield walk( root, { ignore } ), file => {
-			const path = join(root, file)
+			const filePath = path.join(root, file)
 			return {
-				name: path,
-				module: require( path )
+				name: filePath,
+				module: require( filePath )
 			}
 		});
 	}
 	[__parseName]( key ){
-		let base = basename( key, '.js' );
+		let base = path.basename( key, '.js' );
 		if( base === 'index' ){
 			let _split = key.split('/');
 			return _split[ _split.length - 2 ];
