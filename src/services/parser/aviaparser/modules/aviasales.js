@@ -1,4 +1,4 @@
-const diesel = require('diesel-js');
+//const diesel = require('diesel-js');
 const _ = require('lodash');
 
 module.exports = ['BaseService', function(BaseService){
