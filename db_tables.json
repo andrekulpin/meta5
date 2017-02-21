@@ -1,0 +1,15 @@
+{
+	"redis":{
+		"metaparser_aviaparser_group": "aviaparser current queue group number",
+		"metaparser_aviaparser_queue": "aviaparser queue tasks",
+		"metaparser_aviaparser_lock": "aviaparser semaphore lock to get tasks from vertica",
+		"metaparser_aviaparser_": "aviaparser saved cvs; the key format: metaparser_aviaparser_skyscanner_RTW_MOW_2017-02-14_",
+		"metaparser_system_users_": "user info"
+	},
+	"riak":{
+		"metaparser/aviaparser_config":"aviaparser basic config: concurrency, sites among other things ",
+		"metaparser/cron_config":"cron configs: parsers, active, schedule times",
+		"metaparser/api_config": "api creds: avia, rzd",
+		"metaparser/system_whitelist": "whitelist"
+	}
+}

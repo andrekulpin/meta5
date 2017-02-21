@@ -7,6 +7,7 @@ module.exports = ['services/parser/aviaparser', 'CronUtils', 'models/aviaparser'
 	const aviaparser = new Aviaparser( config );
 
 	return function*(){
+		debugger
 		let task = yield aviaparser.getTask();
 		if(!task){
 			yield aviaparser.updateConfig();

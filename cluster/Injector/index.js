@@ -72,7 +72,7 @@ class Injector {
 				try{
 					fac = factory( ...args )
 				} catch( err ){
-					throw new Error( err );	
+					throw new Error( err );
 				}
 				return done( fac );
 			})

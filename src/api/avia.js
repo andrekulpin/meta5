@@ -2,11 +2,11 @@ const _ = require('lodash');
 const qs = require('querystring');
 const { join } = require('path');
 
-module.exports = ['NetUtils', 'models/api', 'system_updater', function*( NetUtils, db, initUpdater ){
+module.exports = ['NetUtils', 'models/api', 'SystemUpdater', function*( NetUtils, db, initUpdater ){
 
 	var config = yield db.getConfig();
 	
-	const updater = initUpdater([ db.getConfig.bind(db) ]);
+	const updater = initUpdater( db.getConfig.bind(db) );
 	updater.on('updated', data => {
 		config = data.config;
 	});
