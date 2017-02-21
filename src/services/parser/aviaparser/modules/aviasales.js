@@ -10,8 +10,13 @@ module.exports = ['BaseService', function(BaseService){
 		}
 
 		*getFares(){
-			diesel()
-			
+			yield ( 
+				diesel()
+				.goto()
+				.evaluate()
+				.end()
+			)
+
 		}
 
 		formatFares(){
