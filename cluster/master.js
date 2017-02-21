@@ -11,6 +11,6 @@ exports.init = function( config ){
 
 	cluster.on('exit', function(){
 		this.fork();
-	})
+	});
 
 }

@@ -54,8 +54,8 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 		*setLockGroupTasks( tasks, group ){
 			return yield this.redis.execBatch(
 				{ fn: 'del', key: 'metaparser_aviaparser_lock' },
-				{ fn: 'rpush', key: 'metaparser_aviaparser_queue', 'value': tasks }//,
-				//{ fn: 'set', key: 'metaparser_group', 'value': group }
+				{ fn: 'rpush', key: 'metaparser_aviaparser_queue', 'value': tasks },
+				{ fn: 'set', key: 'metaparser_group', 'value': group }
 			);
 		}
 

@@ -41,7 +41,9 @@ module.exports = [
 					let res = yield db.generateTasks( queries );
 					let tasks = unifiyTasks(res);
 					yield db.setLockGroupTasks( tasks );
-					this.log.info('generateTasks_success', tasks.length);
+					this.log.info('generateTasks_success', /*tasks.length*/{
+						
+					});
 				}
 				yield utils.waitFor( db.getLock.bind( db ));
 			}

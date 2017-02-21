@@ -1,18 +1,18 @@
 const defer = require('co-defer');
 const _ = require('lodash');
-const { EventEmitter } = require('events');
+const __init = Symbol('__init');
 const { systemUpdateInterval } = require('cluster/config');
 
-module.exports = function( fn, interval ){
+module.exports = ['BaseService', function( BaseService ){
 
-	class Updater extends EventEmitter {
-		constructor( fn ){
+	class Updater extends BaseService {
+		constructor( fn, interval ){
 			super();
 			this.interval = interval;
 			this.fn = fn;
 		}
 
-		init(){
+		[__init](){
 			const self = this;
 			defer.setInterval(function*(){
 				let res = yield _.map( self.fn, fn => fn() );
@@ -21,12 +21,10 @@ module.exports = function( fn, interval ){
 		}
 	}
 
-	if(!_.isArray( fn ) && !_.isFunction( fn )){
-		throw new Error('A function or an array is expected.')
+	return function( fn, interval ){
+		const updater = new Updater( fn, interval );
+		updater[__init]();
+		return updater;
 	}
-
-	const updater = new Updater( fn, interval );
-	updater.init();
-	return updater;
 	
-}
+}];
