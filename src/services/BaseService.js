@@ -6,8 +6,8 @@ module.exports = ['Logger', function( getLogger ){
 
 		constructor(){
 			super();
-			this.log = getLogger().child({ service: this.constructor.name });
-			/*{info:function(){}, error: function(){}}//*/
+			this.log = {info:function(){}, error: function(){}}//getLogger().child({ service: this.constructor.name });
+			/*//*/
 		}
 
 	}

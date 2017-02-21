@@ -7,7 +7,7 @@ module.exports = ['BaseModel', function( BaseModel ){
 		}
 
 		*addStats( key, data ){
-			return yield this.riak.rpush( key, data );
+			return yield this.redis.rpush( key, data );
 		}
 
 	}

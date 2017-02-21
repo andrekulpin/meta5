@@ -106,8 +106,8 @@ function unifiyTasks(tasks){
 	return (
 		_(tasks)
 		.flatten()
-		.map( t => _.pick( t, _.keys( MAP )))
-		.map( t => _.mapKeys( t, ( v, k ) => MAP[ k ]))
+		.map( t => _.pick( t, _.keys( MAP )) )
+		.map( t => _.mapKeys( t, ( v, k ) => MAP[ k ]) )
 		.compact()
 		.shuffle()
 		.value()
