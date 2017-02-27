@@ -1,9 +1,24 @@
 const _ = require('lodash');
 
+/*
+	const csv = new CSV(['id','name','age']);
+
+	_.each([
+		{ id: 1, name: 'mark', age: 23 },
+		{ id: 2, name: 'john', age: 27 },
+		{ id: 3, name: 'nick', age: 30 }
+	], function(line){
+		csv.addLine( line );
+	})
+
+	var result = csv.end()
+*/
+
 module.exports = ['BaseService', function( BaseService ){
 
 	class CSV extends BaseService {
 		constructor( headers, delimiter ){
+			super();
 			this.headers = headers;
 			this.data = [];
 			this.delimiter = delimiter || ';';
@@ -35,7 +50,6 @@ module.exports = ['BaseService', function( BaseService ){
 					return csv.push(_.map( this.headers, ( header ) => {
 						return header in line ? line[ header ] : '';
 					}).join( this.delimiter ));
-
 				}
 			});
 

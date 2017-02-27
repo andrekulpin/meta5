@@ -4,16 +4,17 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 
 	class AviaparserModel extends BaseModel {
 
-		constructor( modelName ){
-			super( modelName );
+		constructor(){
+			super();
 		}
 
 		*getConfig(){
 			return yield this.riak.get('metaparser/aviaparser_config');
+			//return yield this.redis.get('metaparser_aviaparser_config');
 		}
 
 		*getCodes(){
-			return yield this.riak.get('metaparser/skyscannerCityCodes');
+			return yield this.redis.get('metaparser_aviaparser_skyscannerCityCodes');
 		}
 
 		*getGroup(){
@@ -21,7 +22,7 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 		}
 
 		*insertTask( task ){
-			return yield this.redis.rpush( 'metaparser_aviaparser_queue', task );
+			return yield this.redis.lpush( 'metaparser_aviaparser_queue', task );
 		}
 
 		*getTask(){
@@ -48,7 +49,7 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 		}
 
 		*getWhitelist(){
-			return yield this.riak.get('metaparser/aviaparser_config');
+			return yield this.redis.get('metaparser/aviaparser_config');
 		}
 
 		*setLockGroupTasks( tasks, group ){
@@ -73,6 +74,6 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 		}
 	}
 
-	return new AviaparserModel( 'aviaparser' );
+	return new AviaparserModel();
 
 }]

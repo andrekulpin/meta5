@@ -8,7 +8,7 @@ const __sanitize = Symbol('__sanitize');
 
 class Redis {
     
-    constructor( driver, config ){
+    constructor( driver, config = {} ){
         this[__driver] = driver;
         this[__config] = config;
     }

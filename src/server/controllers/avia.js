@@ -28,7 +28,7 @@ module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'api/avia', function
 
 			handler: function*(){
 				this.log.info('getConfig');
-			  	this.body = fs.createReadStream(__filename, { encoding: 'utf8'});
+			  	this.body = fs.createReadStream( __filename, { encoding: 'utf8'} );
 			}
 
 		},
@@ -41,7 +41,16 @@ module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'api/avia', function
 			}
 		},
 
-		parseAviaTask: {
+
+		//metaparser/avia/parseTask
+/*		dashboard: function * (){
+
+			this.body = 
+
+		},*/
+
+		//metaparser/avia/parseTask
+		parseTask: {
 			method: 'get',
 			persmissions: ['metaparser'],
 			params: ['source', 'from', 'to', 'dateFrom'],

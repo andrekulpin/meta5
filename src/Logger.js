@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 const config = require('cluster/config');
-const zmq = {}//require('zmq');
+const zmq = require('zmq');
 const bunyan = require('bunyan');
 
 const levels = {

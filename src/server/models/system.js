@@ -7,7 +7,7 @@ module.exports = ['BaseModel', function( BaseModel ){
 		}
 
 		*getWhitelist(){
-			return yield this.riak.get('metaparser/system_whitelist');
+			return yield this.redis.get('metaparser_system_whitelist');
 		}
 
 		*getUser( user ){

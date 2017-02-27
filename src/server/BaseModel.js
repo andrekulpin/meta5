@@ -7,8 +7,8 @@ module.exports = [ 'storage', function*( getStorage ){
 	
 	class BaseModel {
 
-		constructor( modelName ){
-			this.modelName = modelName;
+		constructor(){
+			this.modelName = this.constructor.name;
 			each( storage, ( db, name ) => this[ name ] = db );
 		}
 

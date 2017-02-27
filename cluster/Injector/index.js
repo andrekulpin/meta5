@@ -65,6 +65,7 @@ class Injector {
 					try{
 						fac = yield factory( ...args )
 					} catch( err ){
+						console.log(factory + '')
 						throw new Error( err );
 					}
 					return done( fac );

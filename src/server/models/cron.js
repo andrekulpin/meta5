@@ -7,7 +7,7 @@ module.exports = ['BaseModel', function( BaseModel ){
 		}
 
 		*getConfig(){
-			return yield this.riak.get('metaparser/cron_config');
+			return yield this.redis.get('metaparser_cron_config');
 		}
 
 	}

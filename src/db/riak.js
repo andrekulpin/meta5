@@ -6,7 +6,7 @@ const P = require('bluebird');
 
 class Riak {
 
-    constructor( driver, config ){
+    constructor( driver, config = {} ){
         this[__driver__] = driver;
         this[__config__] = config;
     }
@@ -56,6 +56,21 @@ class Riak {
                 resolve( result );
             })
         })
+    }
+
+    *keys( bucket, options = {} ){
+        assert(bucket, 'A bucket is needed.');
+        return new P(( resolve, reject ) => {
+            this.client.listKeys({
+                stream: options.stream || false, //dude...
+                bucket
+            }, ( err, result ) => {
+                if(err){
+                    return reject( err );
+                }
+                resolve( result );
+            });
+        });
     }
 
     end( callback ){

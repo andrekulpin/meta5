@@ -121,31 +121,29 @@ function parseResponse( data ){
 
     for(var i in itineraries){
         var it = itineraries[ i ];
-        //get the key
         var key = [];
         var _key = [];
         for(var k in it.leg_ids){
             var leg = $$.legs[ it.leg_ids[ k ] ];
-            _key.push( $$.places[ leg.origin_place_id ].display_code );
-            _key.push( $$.places[ leg.destination_place_id ].display_code );
-            _key.push( $$.carriers[ leg.marketing_carrier_ids[ 0 ] ].display_code );
-            _key.push( leg.stop_count );
-            _key.push( moment( leg.departure, moment.ISO_8601 ).format('HHmm') );
-            _key.push( moment( leg.arrival, moment.ISO_8601 ).format('HHmm') );
-            key.push( _key.join( '-' ) );
-            _key.length = 0;
+            for(var l in leg.segment_ids ){
+                var s_id = leg.segment_ids[ l ];
+                _key.push( $$.carriers[ leg.marketing_carrier_ids[ 0 ] ].display_code);
+                _key.push(_.padStart($$.segments[ s_id ].marketing_flight_number, 4, '0' ));
+                key.push( _key.join('') );
+                _key.length = 0;
+
+            }
         }
 
         for(var q in it.pricing_options){
             var option = it.pricing_options[ q ];
             _prices.push({
-                n: $$.agents[ option.agent_ids[ 0 ] ].name,
-                p: option.items[ 0 ].price.amount || option.price.amount || 0,
+                name: $$.agents[ option.agent_ids[ 0 ] ].name,
+                price: option.items[ 0 ].price.amount || option.price.amount || 0,
                 l: option.items[ 0 ].url
             })
         }
-
-        _tmp[ key.join( ':' ) ] = {
+        _tmp[ key.join( '-' ) ] = {
             list: _prices.slice( 0 ),
             position: ++i
         }

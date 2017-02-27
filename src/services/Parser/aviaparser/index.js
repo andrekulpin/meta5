@@ -12,15 +12,14 @@ const MAP = {
 module.exports = [
 	
 	'Queue',
-	'UniversalFormatter',
-	'BestPriceCutter',
+	'NewFormatter',
 	'models/aviaparser',
 	'aviaparser/utils',
 	'api/avia',
 	'aviaparser/modules/',
 	'BaseService',
 
-	function( Queue, UniversalFormatter, BestPriceCutter, db, utils, api, Parsers, BaseService ){
+	function( Queue, Formatter, db, utils, api, Strategies, BaseService ){
 
 		class Aviaparser extends BaseService {
 
@@ -62,29 +61,19 @@ module.exports = [
 				const name = utils.getParser( task.source );
 				const params = utils.getOTTParams( task );
 				const config = this.config.sites[ name ];
-				const Parser = Parsers[ name ];
-				const parser = new Parser( task, config );
+				const Strategy = Strategies[ name ];
+				const parser = new Strategy( task, config );
 				try {
 					var data = yield {
 						fares: parser.getFares(),
 						ottFares: api.getOTTFares( params )
 					}
 					let { fares, ottFares } = data;
-					let _data = {};
-					_data.fares = fares;
-					_data.ottData = ottFares;
-					_data.parsingDate = new Date();
-					_data.parserMode  = 'auto';
-					let obj = {
-						data: utils.getOTTDataObj( _data ),
-						need: task.source,
-						universalFormater: UniversalFormatter,
-						BestPricesCutter: BestPriceCutter,
-						options: {},
-						task: task
-					}
-					fares = yield parser.formatFares( obj );
-					yield db.saveParsedData( key, fares );
+					debugger;
+					const formatter = new Formatter( task, this.config.csvHeaders );
+					const formatted = formatter.merge( fares, ottFares );
+					debugger;
+					yield db.saveParsedData( key, formatted );
 				} catch( err ){
 					this.log.error('parseTask_error', err);
 					return yield db.saveParsedData( key, 'Parse_error', 10 );
@@ -105,13 +94,13 @@ module.exports = [
 function unifiyTasks(tasks){
 	return (
 		_(tasks)
-		.flatten()
-		.map( t => _.pick( t, _.keys( MAP )) )
-		.map( t => _.mapKeys( t, ( v, k ) => MAP[ k ]) )
-		.compact()
-		.shuffle()
-		.value()
-	)
+			.flatten()
+			.map( t => _.pick( t, _.keys( MAP )) )
+			.map( t => _.mapKeys( t, ( v, k ) => MAP[ k ]) )
+			.compact()
+			.shuffle()
+			.value()
+		)
 }
 
 function stub(n){

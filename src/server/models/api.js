@@ -2,16 +2,16 @@ module.exports = ['BaseModel', function( BaseModel ){
 
 	class ApiModel extends BaseModel {
 
-		constructor( modelName ){
-			super( modelName );
+		constructor(){
+			super();
 		}
 
 		*getConfig(){
-			return yield this.riak.get('metaparser/api_config');
+			return yield this.redis.get('metaparser_api_config');
 		}
 
 	}
 
-	return new ApiModel('api');
+	return new ApiModel();
 
 }]

@@ -9,7 +9,9 @@ module.exports = [ 'controllers/', 'Validator', function( controllers, $validato
 		let router = kroute();
 		//hook up all the controllers
 		_.each( controllers, ( controller, ctrl ) => {
-			_.each( controller, ({ method, handler, params }, name ) => {
+			_.each( controller, ( value , name ) => {
+				var { handler, method, params } = value;
+				handler = handler ? _.isFunction( value ) && value : function(){};
 				let url = join( '/', mainUrl, ctrl, _.toLower( name ));
 				router[ method || mainMethod ]( url, $validator( handler, params ));
 			});
