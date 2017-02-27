@@ -43,17 +43,18 @@ function getOttFareFigures( priceInfo, $fare ){
 	}
 }
 
-module.exports = ['BaseService', 'CSV', ( BaseService, CSV ) => {
+module.exports = ['BaseService', BaseService => {
 
 	class Formatter extends BaseService {
-		constructor( task, headers ){
+		constructor( task ){
 			super();
 			this.task = task;
-			this.headers = headers;
 		}
 
 		merge( fares, ottFares ){
-			const csv = new CSV( this.headers );
+
+			const result = [];
+
 			const { source, from, to, dateFrom, dateTo } = this.task;
 
 			ottFares = _.reduce( ottFares, function( o, datum, key ){
@@ -65,12 +66,10 @@ module.exports = ['BaseService', 'CSV', ( BaseService, CSV ) => {
 			const today = date.format('YYYY/MM/DD');
 			const time = date.format('hh:mm:ss');
 			_.each( fares, ( fare, key ) => {
-
 				let keyParts = key.split('-');
 				let ott_place = _.findIndex( fare, ({ n, p }) => n.match( /onetwotrip/i ));
 				let ott_price = _.get( fare, '['+ ott_place++ +'].p', '' );
-
-				let line = {
+				let offer = {
 					'parse_date': today,
 					'parse_time': time,
 					'class': '',
@@ -98,18 +97,13 @@ module.exports = ['BaseService', 'CSV', ( BaseService, CSV ) => {
 					'ott_place': ott_place,
 					'ott_price': ott_price
 				}
-
 				let ottFare = ottFares[ key ];
 				if( ottFare ){
-					line = _.extend({}, line, getOttFareFigures( ottFare, fare ));
+					offer = _.extend({}, offer, getOttFareFigures( ottFare, fare ));
 				}
-				csv.addLine( line );
+				result.push( offer );
 			});
-				
-			debugger;
-
-			return csv.end();
-
+			return result;
 		}
 
 	}

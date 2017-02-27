@@ -18,8 +18,9 @@ module.exports = [
 	'api/avia',
 	'aviaparser/modules/',
 	'BaseService',
+	'AnalyticsReport'
 
-	function( Queue, Formatter, db, utils, api, Strategies, BaseService ){
+	function( Queue, Formatter, db, utils, api, Strategies, BaseService, analytics ){
 
 		class Aviaparser extends BaseService {
 
@@ -69,11 +70,10 @@ module.exports = [
 						ottFares: api.getOTTFares( params )
 					}
 					let { fares, ottFares } = data;
-					debugger;
-					const formatter = new Formatter( task, this.config.csvHeaders );
-					const formatted = formatter.merge( fares, ottFares );
-					debugger;
-					yield db.saveParsedData( key, formatted );
+					const formatter = new Formatter( task );
+					const offers = formatter.merge( fares, ottFares );
+					//need manual mode!!
+					yield analytics.addStats( 'metaparser_aviaparser', offers );
 				} catch( err ){
 					this.log.error('parseTask_error', err);
 					return yield db.saveParsedData( key, 'Parse_error', 10 );

@@ -1,57 +1,55 @@
-const _ = require('lodash')
+const redis = require('redis')
 
+const client = redis.createClient()
 
-let value = _.attempt(n => JSON.parse(n), '10')
-
-//console.log(value)
-
-/*var pipe = _.flow([ 
-
-	n => n * n, 
-	n => n * 1000 ]
-
-);*/
-
-const MAP = {
-	source: 'source',
-	destination: 'to',
-	depart_date: 'dateFrom',
-	return_date: 'dateTo',
-	origin: 'from'
-}
-
-var task = {
-	source: 'sky', depart_date: '20170316', origin: 'MOW', destination: 'LED'
-}
-
-var headers = [[task,task,task], [task,false,false]];
-
-var gg = _.flow([
-	_.flatten,
-	_.compact,
-	_.partial( _.map, _, n => _.pick(n, _.keys( MAP )) ),
-	_.partial( _.map, _, n => _.mapKeys( n, ( v, k ) => MAP[ k ] ) ),
-	_.shuffle
-]);
-
-
-var go = _.cond([
-	[ _.isError,  _.identity ],
-	[ _.stubTrue, _.identity ]
-]);
-
-
-var b = _.flow([ 
-	_.partial( _.attempt, gg, _ ), 
-	go
-])
-
-
-var sss = _.cond([
-	[ _.matches('a'), _.constant(555) ],
-	[ _.stubFalse, _.constant(404) ]
-])
-
-console.log(sss('a'))
-
-
+client.hset('metaparser_analytics', 'metaparser_aviaparser', JSON.stringify([
+        "parse_date",
+        "parse_time",
+        "class",
+        "direction",
+        "departure",
+        "return",
+        "carrier_fw",
+        "carrier_bw",
+        "flights",
+        "direct",
+        "channel",
+        "agent",
+        "fics",
+        "fare",
+        "taxes",
+        "com%",
+        "com_abs",
+        "t%",
+        "dis/mar",
+        "nf%",
+        "nc%",
+        "nt%",
+        "sale",
+        "ldiff",
+        "max diff",
+        "need diff%",
+        "need diff",
+        "nnf%",
+        "nnc%",
+        "nnt%",
+        "fake/no fare",
+        "hidden",
+        "ota1",
+        "ota2",
+        "ota3",
+        "ota1n",
+        "ota2n",
+        "ota3n",
+        "count",
+        "mdm_markup",
+        "pmode",
+        "pos_offer",
+        "carrier_fd_valid",
+        "carrier_bw_valid",
+        "flightnumbers",
+        "ott_place",
+        "ott_price"
+    ]), function(err){
+	console.log(err || 'ok')
+})

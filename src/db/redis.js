@@ -64,6 +64,14 @@ class Redis {
         return this[__get]( yield this.client.existsAsync( key ));
     }
 
+    *hget( namespace, key ){
+        return this[__get]( yield this.client.hgetAsync( namespace, key ));
+    }
+
+    *hset( namespace, key, data ){
+        return yield this.client.hsetAsync( namespace, key, data );
+    }
+
     *execBatch( ...batch ){
         let multi = this.client.multi();
         for( let {fn, key, value} of batch ){

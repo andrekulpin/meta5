@@ -7,15 +7,15 @@ module.exports = ['BaseModel', function( BaseModel ){
 		}
 
 		*getHeaders( key ){
-			return yield this.redis.get( key );
+			return yield this.redis.hget( 'metaparser_analytics', key );
 		}
 
 		*addStats( key, data ){
-			return yield this.redis.rpush( key, data );
+			return yield this.redis.rpush( 'vertica_stat_' + key, data );
 		}
 
 	}
-
+	//singleton
 	return new AnalyticsModel();
 
 }]
