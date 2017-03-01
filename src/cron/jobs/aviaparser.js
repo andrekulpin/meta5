@@ -8,7 +8,7 @@ module.exports = ['services/parser/aviaparser', 'CronUtils', 'models/aviaparser'
 
 	return function*(){
 		let task = yield aviaparser.getTask();
-		if(!task){
+		if( !task ){
 			yield aviaparser.updateConfig();
 			return yield aviaparser.generateTasks();
 		}

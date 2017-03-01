@@ -55,16 +55,14 @@ module.exports = [ 'aviaparser/utils', 'models/aviaparser', 'api/avia', function
 			persmissions: ['metaparser'],
 			params: ['source', 'from', 'to', 'dateFrom'],
 			handler: function*(){
-				debugger;
 				const task = this.request.query;
 				//const task = { source: 'skyscanner', from: 'MOW', to: 'LED', dateFrom: '2017-02-16'};
 				const key = utils.generateKey( task );
-				debugger;
+				task.mode = task.mode || 'manual';
 				yield model.insertTask( task );
 				while( !( yield model.isParseReady( key ) )){
 					yield P.delay( 3000 );
 				}
-				debugger;
 				this.body = model.getParsedData( key );
 			}
 		}

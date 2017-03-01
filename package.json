@@ -47,6 +47,7 @@
     "mocha-co": "1.17.2",
     "moment": "2.15.2",
     "node-uuid": "1.4.7",
+    "normalizr": "^3.2.2",
     "pg": "6.1.0",
     "proxyquire": "1.7.10",
     "ramda": "0.22.1",

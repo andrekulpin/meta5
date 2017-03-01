@@ -31,12 +31,6 @@ module.exports = ['models/aviaparser', 'NetUtils', 'references', 'BaseService', 
             return parsedFares;
         }
 
-        *formatFares( obj ){
-            this.log.info('formatFares_0');
-            let { data: airports } = yield getReference('airports');
-            return yield format( obj, airports );
-        }
-
         *[__getGeoName]( city ){
             this.log.info('getGeoName_0', city);
             const { headers } = this.config;
@@ -131,21 +125,19 @@ function parseResponse( data ){
                 _key.push(_.padStart($$.segments[ s_id ].marketing_flight_number, 4, '0' ));
                 key.push( _key.join('') );
                 _key.length = 0;
-
             }
         }
-
         for(var q in it.pricing_options){
             var option = it.pricing_options[ q ];
             _prices.push({
                 name: $$.agents[ option.agent_ids[ 0 ] ].name,
-                price: option.items[ 0 ].price.amount || option.price.amount || 0,
-                l: option.items[ 0 ].url
+                price: option.items[ 0 ].price.amount || option.price.amount || 0
             })
         }
         _tmp[ key.join( '-' ) ] = {
             list: _prices.slice( 0 ),
-            position: ++i
+            position: ++i,
+            isDirect: leg.stop_count
         }
 
         _prices.length = 0;
@@ -168,133 +160,4 @@ function refactorize( arr ){
         obj[ i ] = refactorDict( arr[ i ], 'id' );
     }
     return obj;
-}
-
-function *format( obj, airports ){
-    var data = obj.data;
-    var fares = data && data.fares;
-    var ottData = data && data.ottData || {};
-    var universalFormater = obj.universalFormater;
-    var bpc = new obj.BestPricesCutter();
-    var options = obj && obj.options;
-    var dateFrom = obj.task.dateFrom;
-    var dateTo = obj.task.dateTo;
-
-    if(ottData){
-        var newOttData = {};
-        for(var key in ottData){
-            var value = ottData[key];
-            value.key = key;
-            newOttData[value.keyByTime] = value;
-        }
-        ottData = newOttData;
-    }
-
-    var csv = [];
-    if(!obj.hideHeaders){
-        csv.push(universalFormater({type: 'headers'}));
-    }
-
-    for(key in fares){
-        var fare = fares[key];
-        if(fare.list.length <= 1){
-            // skip proposals with only one participant
-            continue;
-        }
-        for(var company in fare.list){
-            if(fare.list[company].p === ''){
-                delete fare.list[company];
-            }
-        }
-
-        // why we need it? we've already checked it for <= 1 and called continue
-        if(Object.keys(fare).length === 0){
-            continue;
-        }
-        var ott_place = undefined;
-        var ott_price = undefined;
-        var competitorsInOrder = [];
-        var number = 0;
-        for(var k in fare.list){
-            number++;
-            if(!ott_place && fare.list[k].n.match(/onetwotrip/i)){
-                ott_place = number;
-                ott_price = fare.list[k].p;
-            }
-            competitorsInOrder.push([
-                fare.list[k].n,
-                fare.list[k].p,
-                fare.list[k].l
-            ]);
-        }
-
-        // key : "DME-MAD-LH-1-0550-1130:MAD-DME-LH-1-1840-0300"
-        //SVO-LED-SU-0-0710-0830---LED-SVO-SU-0-1530-1650
-        var keyParts = key.split('-');
-        var cityFrom = keyParts[0];
-        var cityTo = keyParts[1];
-
-        if(airports[cityFrom]){
-            cityFrom = airports[cityFrom].city;
-        }
-        if(airports[cityTo]){
-            cityTo = airports[cityTo].city;
-        }
-
-        var lv = {type: 'line'}; // line vars
-
-        var flightNumber = ottData[key] ? ottData[key].key : '';
-        if(flightNumber.length){
-            key = flightNumber;
-        }
-        lv.channel = 'skyscanner';
-        lv.parsingDate = data.parsingDate;              // parsing time
-        lv.parserMode = data.parserMode;                // parser mode: auto|manual
-        lv.serviceClass = data.serviceClass;            // class
-        lv.from = cityFrom;                             // route from
-        lv.to = cityTo;                                 // route to
-        lv.dateFw = dateFrom;                           // fwdDate
-        lv.oneway = dateTo ? false : true;              // oneway
-        lv.direct = keyParts[3] == '0' && (keyParts[8] == undefined || keyParts[8] == '0'); // direct or with stops?
-        lv.dateBw = dateTo || '';               // retDate
-        lv.acFw = keyParts[2];                          // aircompany forward
-        lv.acBw = keyParts[7] || '';                    // aircompany return
-        lv.flightKey = key;                             // OTT KEY
-        lv.ottData = ottData[key];                      // OTT FARES DATA
-        if(!lv.ottData){
-            var foundKey = _.find(ottData, function(data){
-                return data.key == key;
-            });
-            if(foundKey){
-                lv.ottData = ottData[foundKey.keyByTime];
-            }
-        }
-        lv.ottDataSI = ottData['SPECIAL_INFO'];         // OTT SPECIAL INFO
-        lv.OTA1N = competitorsInOrder[0] && competitorsInOrder[0][0] || '';      // OTA1 NAME
-        lv.OTA2N = competitorsInOrder[1] && competitorsInOrder[1][0] || '';      // OTA2 NAME
-        lv.OTA3N = competitorsInOrder[2] && competitorsInOrder[2][0] || '';      // OTA3 NAME
-        lv.OTA1 = competitorsInOrder[0] && competitorsInOrder[0][1] || '';       // OTA1 PRICE
-        lv.OTA2 = competitorsInOrder[1] && competitorsInOrder[1][1] || '';       // OTA2 PRICE
-        lv.OTA3 = competitorsInOrder[2] && competitorsInOrder[2][1] || '';       // OTA3 PRICE
-        lv.OTA1L = competitorsInOrder[0] && competitorsInOrder[0][2] || '';      // OTA1L LINK
-        lv.OTA2L = competitorsInOrder[1] && competitorsInOrder[1][2] || '';      // OTA2L LINK
-        lv.OTA3L = competitorsInOrder[2] && competitorsInOrder[2][2] || '';      // OTA3L LINK
-        lv.position = fare.position || '';          // potision offer from page
-        lv.acFwValid = '';
-        lv.acBwValid = '';
-        lv.flightNumbers = flightNumber && flightNumber.replace(/..([0-9]{4}-?)/g, '$1') || "";
-        lv.ott_place = ott_place;
-        lv.ott_price = ott_price;
-        var line = universalFormater(lv, options);
-        if(line){
-            var index = csv.push(line) - 1;
-            bpc.add(index, lv);
-        }
-    }
-
-    // get only cheapest flights per aircompany
-    csv = bpc.cut(csv, obj.hideHeaders, options);
-    csv.push(''); // add \n to last element
-    csv.join('\n');
-    return csv.join('\n');
 }

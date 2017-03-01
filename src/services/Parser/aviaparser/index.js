@@ -1,12 +1,10 @@
 const _ = require('lodash');
 const P = require('bluebird');
 const __parseTask = Symbol('__parseTask');
-const MAP = {
-	source: 'source',
-	destination: 'to',
-	depart_date: 'dateFrom',
-	return_date: 'dateTo',
-	origin: 'from'
+
+const MAP = { 
+	source: 'source', destination: 'to', origin: 'from',
+	depart_date: 'dateFrom', return_date: 'dateTo'
 }
 
 module.exports = [
@@ -18,7 +16,7 @@ module.exports = [
 	'api/avia',
 	'aviaparser/modules/',
 	'BaseService',
-	'AnalyticsReport'
+	'AnalyticsReport',
 
 	function( Queue, Formatter, db, utils, api, Strategies, BaseService, analytics ){
 
@@ -35,12 +33,20 @@ module.exports = [
 				let locked = yield db.setLock();
 				if( locked ){
 					this.log.info('generateTasks_0');
-					let group = yield db.getGroup();
-					let active = _.filter( this.config.sites, {'active': true, 'group': +group } );
+					let group = parseInt( yield db.getGroup() ) || 1;
+					let active = _.filter( this.config.sites, {'active': true, 'group': group } );
 					let queries = _.map( active, ({ top, query }) => utils.renderString( query, { top }));
-					let res = yield db.generateTasks( queries );
-					let tasks = unifiyTasks(res);
-					yield db.setLockGroupTasks( tasks );
+					let tasks;
+					try{
+						let res = yield db.generateTasks( queries );
+						tasks = unifiyTasks( res );
+						yield db.saveBackUpTasks( tasks );
+					} catch( err ){
+						this.log.error('generateTasks_1', 'vertica_error');
+						tasks = yield db.getBackUpTasks();
+					}
+					group = ++group > 3 ? 1 : group;
+					yield db.setLockGroupTasks( tasks, group );
 					this.log.info('generateTasks_success', /*tasks.length*/{
 						
 					});
@@ -72,8 +78,10 @@ module.exports = [
 					let { fares, ottFares } = data;
 					const formatter = new Formatter( task );
 					const offers = formatter.merge( fares, ottFares );
-					//need manual mode!!
-					yield analytics.addStats( 'metaparser_aviaparser', offers );
+					yield [ 
+						analytics.addStats( 'metaparser_aviaparser', offers ),
+						db.saveParsedData( key, offers )
+					]
 				} catch( err ){
 					this.log.error('parseTask_error', err);
 					return yield db.saveParsedData( key, 'Parse_error', 10 );

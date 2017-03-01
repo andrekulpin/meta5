@@ -48,6 +48,9 @@ module.exports = ['BaseService', function( BaseService ){
 				}
 				if(_.isObject( line )){
 					return csv.push(_.map( this.headers, ( header ) => {
+						if(header === 'max diff'){
+							console.log(header, line[ 'maxDiff' ])
+						}
 						return header in line ? line[ header ] : '';
 					}).join( this.delimiter ));
 				}

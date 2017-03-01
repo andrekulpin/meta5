@@ -12,10 +12,11 @@ class Vertica {
 	}
 
 	*createClient( config ){
-		let client = yield new P((resolve) => {
+		let client = yield new P(( resolve, reject ) => {
 			return new this[__driver__].Pool( config || this[__config__] )
 			.connect()
-			.then(resolve);
+			.then( resolve )
+			.catch( reject );
 		})
         return this.client 
             ? _.assign( _.cloneDeep( this ), { client })
@@ -24,7 +25,6 @@ class Vertica {
 
 	*get( sql ){
 		return this.parse( yield this.client.query( sql ) );
-		//return $$timeLimited(this.client.query(sql), this.timeout || params.timeout);
 	}
 
 	parse( results ){

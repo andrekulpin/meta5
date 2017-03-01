@@ -1,10 +1,10 @@
 const cluster = require('cluster');
-const epic = require('./epic');
+const epicLogo = require('./epic');
 const { cpus } = require('os');
 
 exports.init = function( config ){
 
-	epic();
+	epicLogo();
 
 	let workerCount = config.workerCount || cpus();
 

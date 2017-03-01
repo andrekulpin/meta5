@@ -72,6 +72,14 @@ class Redis {
         return yield this.client.hsetAsync( namespace, key, data );
     }
 
+    *lrange( key, from = 0, to = -1 ){
+        return yield this.client.lrangeAsync( key, from, to );
+    }
+
+    *del( key ){
+        return yield this.client.delAsync( key );
+    }
+
     *execBatch( ...batch ){
         let multi = this.client.multi();
         for( let {fn, key, value} of batch ){

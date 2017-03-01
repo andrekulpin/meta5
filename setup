@@ -1,0 +1,113 @@
+#!/bin/bash
+
+. ~/.nvm/nvm.sh
+# . ~/.profile
+# . ~/.bashrc
+
+NODE_MODULES=node_modules
+NODE_VERSION="7"
+
+function log_error {
+	printf "\033[41m$@\033[0m\n"
+}
+
+function log_info {
+	printf "\033[32m$@\033[0m\n"
+}
+
+function is_installed {
+	local return_=1
+	type $1 > /dev/null 2>&1 || { local return_=0; }
+	echo "$return_"
+}
+
+function npm_package_installed {
+	local return_=1
+	ls node_modules | grep -w $1 >/dev/null 2>&1 || { local return_=0; }
+	echo "$return_"
+}
+
+function redis_is_down {
+	local return_=0
+	redis-cli ping | grep "PONG" >/dev/null 2>&1 || { local return_=1; }
+	echo "$return_"
+}
+
+function is_node_latest {
+	local return_=1
+	type -P node | grep "node/v7." >/dev/null 2>&1 || { local return_=0; }
+	echo "$return_"
+}
+
+[ ! -d "$NODE_MODULES" ] && npm install
+
+if [ $(redis_is_down) ]; then
+	log_error "Redis is down"
+	log_info "Restarting Redis..."
+	/etc/init.d/redis-server restart
+fi;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#/etc/init.d/redis-server stop
+# if [ $(is_node_latest) ]; then
+# 	if [ $(is_installed nvm) ]; 
+# 	then
+# 		nvm install $NODE_VERSION | grep -w "matched"
+# 	else 
+# 		log_error "NVM is not installed" && exit 0
+# 	fi;
+# fi;
+
+
+#[ -d "$NODE_MODULES" ] && npm install
+
+
+
+
+
+
+
+# if [ ! $(is_node_latest) ]; then
+
+
+
+# fi;
+
+
+# [ $(is_installed "nvm") ] && echo "boy"
+# [ $(is_node_latest) ] && echo "node is good"
+
+
+
+
+
+# if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
+#     case " $(groups) " in *\ admin\ *|*\ sudo\ *)
+#     if [ -x /usr/bin/sudo ]; then
+# 	cat <<-EOF
+# 	To run a command as administrator (user "root"), use "sudo <command>".
+# 	See "man sudo_root" for details.
+	
+# 	EOF
+#     fi
+#     esac
+# fi

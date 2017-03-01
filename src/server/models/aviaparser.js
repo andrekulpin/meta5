@@ -33,12 +33,23 @@ module.exports = [ 'BaseModel', function( BaseModel ){
 			return yield this.redis.get( 'metaparser_aviaparser_lock' );
 		}
 
-		*setLock( time = 5 ){
+		*setLock( time = 30 ){
 			return yield this.redis.set( 'metaparser_aviaparser_lock', 1, 'nx', 'ex', time );
 		}
 
 		*saveFares(){
 			return yield this.redis.set( '' );
+		}
+
+		*getBackUpTasks(){
+			return yield this.redis.lrange( 'metaparser_aviaparser_backup_queue' );
+		}
+
+		*saveBackUpTasks( tasks ){
+			yield this.redis.del( 'metaparser_aviaparser_backup_queue' );
+			return yield this.redis.execBatch({
+				fn: 'lpush', key: 'metaparser_aviaparser_backup_queue', 'value': tasks
+			});
 		}
 
 		*generateTasks( queries ){

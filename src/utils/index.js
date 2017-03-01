@@ -25,7 +25,7 @@ class Utils {
 		let slow = slowDown(start, n => Math.min( n + incr, max ));
 		while( !void 0 ){
 			let [ o ] = yield [ fn(), slow ];
-			if( o ){ break };
+			if( !o ){ break };
 		}
 	}
 

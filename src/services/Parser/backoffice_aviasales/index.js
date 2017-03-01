@@ -4,20 +4,12 @@ module.exports = ['CronUtils', 'models/aviaparser', function( utils, db ){
 
 	var count = 0
 
-	return function*(){
+	return function * (){
 
 		console.log(++count);
 
-		yield defer(2000);
+		yield P.delay(5000)
 
 	}
 
 }]
-
-function defer(n){
-	return new P(function(resolve){
-		setTimeout(function(){
-			resolve();
-		}, n)
-	})
-}
